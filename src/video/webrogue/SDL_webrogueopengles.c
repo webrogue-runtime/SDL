@@ -34,14 +34,14 @@
 
 int WEBROGUE_GLES_LoadLibrary(_THIS, const char *path)
 {
+    webrogue_gfx_init_ptrs();
     return 0;
 //     SDL_VideoData *data = (SDL_VideoData *)_this->driverdata;
 }
 
 void *WEBROGUE_GLES_GetProcAddress(_THIS, const char *proc)
 {
-    WR_NOT_IMPLEMENTED;
-    return 0;
+    return webrogueGLLoader(proc);
 // #ifdef HAVE_DLOPEN
 //     return dlsym( 0 /* RTLD_DEFAULT */, proc);
 // #else
@@ -59,8 +59,8 @@ void WEBROGUE_GLES_UnloadLibrary(_THIS)
 
 int WEBROGUE_GLES_SetSwapInterval(_THIS, int interval)
 {
-    WR_NOT_IMPLEMENTED;
-    return 0;
+    // WR_NOT_IMPLEMENTED;
+    // return 0;
     // /* STUB */
     // return SDL_Unsupported();
 }

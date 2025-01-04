@@ -5,5 +5,5 @@
     fprintf(stderr, "__FUNCTION__: %s\n", __FUNCTION__); \
     fprintf(stderr, "__PRETTY_FUNCTION__: %s\n", __PRETTY_FUNCTION__); \
     \
-    abort(); \
+    __builtin_unreachable(); \
 }

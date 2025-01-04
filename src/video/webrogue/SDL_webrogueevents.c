@@ -30,7 +30,7 @@
 
 void WEBROGUE_PumpEvents(_THIS)
 {
-    WR_NOT_IMPLEMENTED;
+   //  WR_NOT_IMPLEMENTED;
     // hidScanInput();
     // N3DS_PollTouch(_this);
 
