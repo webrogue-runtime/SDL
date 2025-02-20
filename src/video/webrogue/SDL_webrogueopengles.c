@@ -34,7 +34,7 @@
 
 int WEBROGUE_GLES_LoadLibrary(_THIS, const char *path)
 {
-    webrogue_gfx_init_ptrs();
+    webrogue_gfx_init_gl();
     return 0;
 //     SDL_VideoData *data = (SDL_VideoData *)_this->driverdata;
 }
@@ -187,7 +187,7 @@ int WEBROGUE_GLES_MakeCurrent(_THIS, SDL_Window * window, SDL_GLContext sdl_cont
 {
     SDL_VideoData *driverdata = (SDL_VideoData *) _this->driverdata;
     WEBROGUE_GLContext* context = sdl_context;
-    webrogue_gfx_init_ptrs();
+    webrogue_gfx_init_gl();
     return 0;
 }
 
