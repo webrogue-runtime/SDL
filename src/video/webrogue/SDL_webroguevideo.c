@@ -270,7 +270,8 @@ static int WEBROGUE_CreateWindow(_THIS, SDL_Window *window)
 
 static void WEBROGUE_DestroyWindow(_THIS, SDL_Window *window)
 {
-    WR_NOT_IMPLEMENTED;
+    // TODO
+    // WR_NOT_IMPLEMENTED;
     return;
     // if (!window) {
     //     return;

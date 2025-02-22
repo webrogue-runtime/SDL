@@ -51,7 +51,8 @@ void *WEBROGUE_GLES_GetProcAddress(_THIS, const char *proc)
 
 void WEBROGUE_GLES_UnloadLibrary(_THIS)
 {
-    WR_NOT_IMPLEMENTED;
+    // TODO
+    // WR_NOT_IMPLEMENTED;
     return;
     // /* FIXME: Support dynamic linking when PNACL supports it */
     // glTerminatePPAPI();
@@ -193,7 +194,8 @@ int WEBROGUE_GLES_MakeCurrent(_THIS, SDL_Window * window, SDL_GLContext sdl_cont
 
 void WEBROGUE_GLES_DeleteContext(_THIS, SDL_GLContext context)
 {
-    WR_NOT_IMPLEMENTED;
+    // TODO
+    // WR_NOT_IMPLEMENTED;
     return;
     // SDL_VideoData *driverdata = (SDL_VideoData *) _this->driverdata;
     // driverdata->ppb_core->ReleaseResource((PP_Resource) context);
