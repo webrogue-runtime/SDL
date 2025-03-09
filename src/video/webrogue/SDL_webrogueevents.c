@@ -26,11 +26,19 @@
 
 #include "../../events/SDL_events_c.h"
 #include "SDL_webrogueevents_c.h"
-// #include "SDL_webroguetouch.h"
+#include <webrogue_gfx/webrogue_gfx.h>
 
 void WEBROGUE_PumpEvents(_THIS)
 {
-   //  WR_NOT_IMPLEMENTED;
+   webrogue_event event;
+   while(1) {
+      event = webrogue_gfx_poll();
+      if(event.type == webrogue_event_type_invalid) {
+         return;
+      }
+      printf("WEBROGUE_PumpEvents type:%d\n", event.type);
+   }
+   WR_NOT_IMPLEMENTED;
     // hidScanInput();
     // N3DS_PollTouch(_this);
 

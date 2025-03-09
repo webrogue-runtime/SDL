@@ -178,8 +178,10 @@ AddWEBROGUEDisplay()
     }
 
     // FIXME
-    mode.w = 2048;
-    mode.h = 2048;
+    int width, height;
+    webrogue_gfx_window_size(&width, &height);
+    mode.w = width;
+    mode.h = height;
     mode.refresh_rate = 60;
     mode.format = SDL_PIXELFORMAT_RGBA8888;
     mode.driverdata = modedata;
@@ -213,8 +215,11 @@ static void WEBROGUE_GetDisplayModes(_THIS, SDL_VideoDisplay *display)
         return;
 
     SDL_zero(mode);
-    mode.w = 2048;
-    mode.h = 2048;
+
+    int width, height;
+    webrogue_gfx_window_size(&width, &height);
+    mode.w = width;
+    mode.h = height;
     mode.refresh_rate = 60;
     mode.format = SDL_PIXELFORMAT_RGBA8888;
     mode.driverdata = modedata;
