@@ -36,16 +36,21 @@ void WEBROGUE_PumpEvents(_THIS)
    while(1) {
       event = webrogue_gfx_poll();
       switch(event.type) {
-         case webrogue_event_type_mouse_down: {
+         case WEBROGUE_EVENT_TYPE_MOUSE_DOWN: {
             SDL_SendMouseButton(data->latest_window, 0, SDL_PRESSED, event.inner.mouse_down.button);
          } break;
-         case webrogue_event_type_mouse_up: {
+         case WEBROGUE_EVENT_TYPE_MOUSE_UP: {
             SDL_SendMouseButton(data->latest_window, 0, SDL_RELEASED, event.inner.mouse_down.button);
          } break;
-         case webrogue_event_type_mouse_motion: {
+         case WEBROGUE_EVENT_TYPE_MOUSE_MOTION: {
             SDL_SendMouseMotion(data->latest_window, 0, 0, event.inner.mouse_motion.x, event.inner.mouse_motion.y);
          } break;
-         case webrogue_event_type_invalid: {
+         case WEBROGUE_EVENT_TYPE_QUIT: {
+            SDL_Event ev;
+            ev.type = SDL_QUIT;
+            SDL_PushEvent(&ev);
+         } break;
+         case WEBROGUE_EVENT_TYPE_INVALID: {
             return;
          }
       }
