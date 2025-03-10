@@ -25,18 +25,30 @@
 #include "SDL_webrogue_unimplemented.h"
 
 #include "../../events/SDL_events_c.h"
+#include "SDL_webroguevideo.h"
 #include "SDL_webrogueevents_c.h"
 #include <webrogue_gfx/webrogue_gfx.h>
 
 void WEBROGUE_PumpEvents(_THIS)
 {
+   SDL_VideoData *data = (SDL_VideoData *)_this->driverdata;
    webrogue_event event;
    while(1) {
       event = webrogue_gfx_poll();
-      if(event.type == webrogue_event_type_invalid) {
-         return;
+      switch(event.type) {
+         case webrogue_event_type_mouse_down: {
+            SDL_SendMouseButton(data->latest_window, 0, SDL_PRESSED, event.inner.mouse_down.button);
+         } break;
+         case webrogue_event_type_mouse_up: {
+            SDL_SendMouseButton(data->latest_window, 0, SDL_RELEASED, event.inner.mouse_down.button);
+         } break;
+         case webrogue_event_type_mouse_motion: {
+            SDL_SendMouseMotion(data->latest_window, 0, 0, event.inner.mouse_motion.x, event.inner.mouse_motion.y);
+         } break;
+         case webrogue_event_type_invalid: {
+            return;
+         }
       }
-      printf("WEBROGUE_PumpEvents type:%d\n", event.type);
    }
    WR_NOT_IMPLEMENTED;
     // hidScanInput();

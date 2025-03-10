@@ -27,6 +27,7 @@
 
 typedef struct SDL_VideoData
 {
+   struct SDL_Window *latest_window;
 } SDL_VideoData;
 
 typedef struct SDL_WindowData

@@ -260,6 +260,7 @@ static int WEBROGUE_GetDisplayBounds(_THIS, SDL_VideoDisplay *display, SDL_Rect 
 
 static int WEBROGUE_CreateWindow(_THIS, SDL_Window *window)
 {
+    SDL_VideoData *driverdata = (SDL_VideoData *) _this->driverdata;
     DisplayDriverData *display_data;
     SDL_WindowData *window_data = (SDL_WindowData *)SDL_calloc(1, sizeof(SDL_WindowData));
     if (!window_data) {
@@ -268,6 +269,8 @@ static int WEBROGUE_CreateWindow(_THIS, SDL_Window *window)
     webrogue_gfx_make_window();
     display_data = (DisplayDriverData *)SDL_GetDisplayDriverData(window->display_index);
     window->driverdata = window_data;
+
+    driverdata->latest_window = window;
 
     SDL_SetKeyboardFocus(window);
     return 0;
