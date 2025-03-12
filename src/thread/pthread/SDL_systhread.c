@@ -29,7 +29,9 @@
 #include <pthread_np.h>
 #endif
 
+#ifndef __wasi__
 #include <signal.h>
+#endif
 #include <errno.h>
 
 #ifdef __LINUX__
@@ -60,7 +62,7 @@
 #endif
 
 
-#ifndef __NACL__
+#if !defined(__NACL__) && !defined(__wasi__)
 /* List of signals to mask in the subthreads */
 static const int sig_list[] = {
     SIGHUP, SIGINT, SIGQUIT, SIGPIPE, SIGALRM, SIGTERM, SIGCHLD, SIGWINCH,
@@ -122,7 +124,7 @@ int SDL_SYS_CreateThread(SDL_Thread *thread)
 
 void SDL_SYS_SetupThread(const char *name)
 {
-#if !defined(__NACL__)
+#if !defined(__NACL__) && !defined(__wasi__)
     int i;
     sigset_t mask;
 #endif /* !__NACL__ */
@@ -162,7 +164,7 @@ void SDL_SYS_SetupThread(const char *name)
     }
 
    /* NativeClient does not yet support signals.*/
-#if !defined(__NACL__)
+#if !defined(__NACL__) && !defined(__wasi__)
     /* Mask asynchronous signals for this thread */
     sigemptyset(&mask);
     for (i = 0; sig_list[i]; ++i) {
