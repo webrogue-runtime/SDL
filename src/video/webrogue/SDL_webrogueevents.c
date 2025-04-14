@@ -25,37 +25,42 @@
 #include "SDL_webrogue_unimplemented.h"
 
 #include "../../events/SDL_events_c.h"
-#include "SDL_webroguevideo.h"
 #include "SDL_webrogueevents_c.h"
-#include <webrogue_gfx/webrogue_gfx.h>
+#include "SDL_webroguevideo.h"
+#include <webroguegfx/webroguegfx.h>
 
 void WEBROGUE_PumpEvents(_THIS)
 {
-   SDL_VideoData *data = (SDL_VideoData *)_this->driverdata;
-   webrogue_event event;
-   while(1) {
-      event = webrogue_gfx_poll();
-      switch(event.type) {
-         case WEBROGUE_EVENT_TYPE_MOUSE_DOWN: {
+    SDL_VideoData *data = (SDL_VideoData *)_this->driverdata;
+    webrogue_event event;
+    while (1) {
+        event = webroguegfx_poll();
+        switch (event.type) {
+        case WEBROGUE_EVENT_TYPE_MOUSE_DOWN:
+        {
             SDL_SendMouseButton(data->latest_window, 0, SDL_PRESSED, event.inner.mouse_down.button);
-         } break;
-         case WEBROGUE_EVENT_TYPE_MOUSE_UP: {
+        } break;
+        case WEBROGUE_EVENT_TYPE_MOUSE_UP:
+        {
             SDL_SendMouseButton(data->latest_window, 0, SDL_RELEASED, event.inner.mouse_down.button);
-         } break;
-         case WEBROGUE_EVENT_TYPE_MOUSE_MOTION: {
+        } break;
+        case WEBROGUE_EVENT_TYPE_MOUSE_MOTION:
+        {
             SDL_SendMouseMotion(data->latest_window, 0, 0, event.inner.mouse_motion.x, event.inner.mouse_motion.y);
-         } break;
-         case WEBROGUE_EVENT_TYPE_QUIT: {
+        } break;
+        case WEBROGUE_EVENT_TYPE_QUIT:
+        {
             SDL_Event ev;
             ev.type = SDL_QUIT;
             SDL_PushEvent(&ev);
-         } break;
-         case WEBROGUE_EVENT_TYPE_INVALID: {
+        } break;
+        case WEBROGUE_EVENT_TYPE_INVALID:
+        {
             return;
-         }
-      }
-   }
-   WR_NOT_IMPLEMENTED;
+        }
+        }
+    }
+    WR_NOT_IMPLEMENTED;
     // hidScanInput();
     // N3DS_PollTouch(_this);
 

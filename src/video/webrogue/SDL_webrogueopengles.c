@@ -22,8 +22,8 @@
 
 #if defined(SDL_VIDEO_DRIVER_WEBROGUE)
 
-#include <webrogue_gfx/webrogue_gfx.h>
 #include "SDL_webrogue_unimplemented.h"
+#include <webroguegfx/webroguegfx.h>
 
 #include "SDL_hints.h"
 // #include "SDL_x11video.h"
@@ -34,19 +34,19 @@
 
 int WEBROGUE_GLES_LoadLibrary(_THIS, const char *path)
 {
-    webrogue_gfx_init_gl();
+    webroguegfx_init_gl();
     return 0;
-//     SDL_VideoData *data = (SDL_VideoData *)_this->driverdata;
+    //     SDL_VideoData *data = (SDL_VideoData *)_this->driverdata;
 }
 
 void *WEBROGUE_GLES_GetProcAddress(_THIS, const char *proc)
 {
-    return webrogueGLLoader(proc);
-// #ifdef HAVE_DLOPEN
-//     return dlsym( 0 /* RTLD_DEFAULT */, proc);
-// #else
-//     return NULL;
-// #endif
+    return webroguegfx_gl_loader(proc);
+    // #ifdef HAVE_DLOPEN
+    //     return dlsym( 0 /* RTLD_DEFAULT */, proc);
+    // #else
+    //     return NULL;
+    // #endif
 }
 
 void WEBROGUE_GLES_UnloadLibrary(_THIS)
@@ -73,8 +73,6 @@ int WEBROGUE_GLES_GetSwapInterval(_THIS)
     // /* STUB */
     // return 0;
 }
-
-
 
 // XVisualInfo *X11_GLES_GetVisual(_THIS, Display *display, int screen)
 // {
@@ -108,14 +106,15 @@ int WEBROGUE_GLES_GetSwapInterval(_THIS)
 //     return egl_visualinfo;
 // }
 
-typedef struct WEBROGUE_GLContext {
+typedef struct WEBROGUE_GLContext
+{
 } WEBROGUE_GLContext;
 
 SDL_GLContext WEBROGUE_GLES_CreateContext(_THIS, SDL_Window *window)
 {
     WEBROGUE_GLContext *context = 0;
     // WEBROGUE_GLContext *share_context = 0;
-    SDL_VideoData *driverdata = (SDL_VideoData *) _this->driverdata;
+    SDL_VideoData *driverdata = (SDL_VideoData *)_this->driverdata;
     int i = 0;
 
     // if (_this->gl_config.share_with_current_context) {
@@ -167,28 +166,26 @@ SDL_GLContext WEBROGUE_GLES_CreateContext(_THIS, SDL_Window *window)
 
     if (context) {
         /* We need to make the context current, otherwise nothing works */
-        SDL_GL_MakeCurrent(window, (SDL_GLContext) context);
+        SDL_GL_MakeCurrent(window, (SDL_GLContext)context);
     }
 
-    return (SDL_GLContext) context;
-
-
+    return (SDL_GLContext)context;
 
     return context;
 }
 
-int WEBROGUE_GLES_SwapWindow(_THIS, SDL_Window * window)
+int WEBROGUE_GLES_SwapWindow(_THIS, SDL_Window *window)
 {
-    SDL_VideoData *driverdata = (SDL_VideoData *) _this->driverdata;
-    webrogue_gfx_present();
+    SDL_VideoData *driverdata = (SDL_VideoData *)_this->driverdata;
+    webroguegfx_present();
     return 0;
 }
 
-int WEBROGUE_GLES_MakeCurrent(_THIS, SDL_Window * window, SDL_GLContext sdl_context)
+int WEBROGUE_GLES_MakeCurrent(_THIS, SDL_Window *window, SDL_GLContext sdl_context)
 {
-    SDL_VideoData *driverdata = (SDL_VideoData *) _this->driverdata;
-    WEBROGUE_GLContext* context = sdl_context;
-    webrogue_gfx_init_gl();
+    SDL_VideoData *driverdata = (SDL_VideoData *)_this->driverdata;
+    WEBROGUE_GLContext *context = sdl_context;
+    webroguegfx_init_gl();
     return 0;
 }
 
@@ -203,4 +200,4 @@ void WEBROGUE_GLES_DeleteContext(_THIS, SDL_GLContext context)
 
 #endif /* SDL_VIDEO_DRIVER_WEBROGUE */
 
-    /* vi: set ts=4 sw=4 expandtab: */
+/* vi: set ts=4 sw=4 expandtab: */

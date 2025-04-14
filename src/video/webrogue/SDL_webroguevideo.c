@@ -22,13 +22,13 @@
 
 #ifdef SDL_VIDEO_DRIVER_WEBROGUE
 
-#include <webrogue_gfx/webrogue_gfx.h>
 #include "SDL_webrogue_unimplemented.h"
+#include <webroguegfx/webroguegfx.h>
 
 #include "../SDL_sysvideo.h"
-#include "SDL_webrogueopengles.h"
 #include "SDL_webrogueevents_c.h"
 #include "SDL_webrogueframebuffer_c.h"
+#include "SDL_webrogueopengles.h"
 #include "SDL_webrogueswkb.h"
 // #include "SDL_n3dstouch.h"
 #include "SDL_webroguevideo.h"
@@ -116,7 +116,6 @@ static SDL_VideoDevice *WEBROGUE_CreateDevice(void)
     device->UpdateWindowFramebuffer = SDL_WEBROGUE_UpdateWindowFramebuffer;
     device->DestroyWindowFramebuffer = SDL_WEBROGUE_DestroyWindowFramebuffer;
 
-
     device->GL_LoadLibrary = WEBROGUE_GLES_LoadLibrary;
     device->GL_GetProcAddress = WEBROGUE_GLES_GetProcAddress;
     device->GL_UnloadLibrary = WEBROGUE_GLES_UnloadLibrary;
@@ -139,7 +138,6 @@ VideoBootStrap WEBROGUE_bootstrap = { WEBROGUEVID_DRIVER_NAME, "Webrogue Video D
 static int WEBROGUE_VideoInit(_THIS)
 {
     SDL_VideoData *driverdata = (SDL_VideoData *)_this->driverdata;
-
 
     // gfxInit(GSP_RGBA8_OES, GSP_RGBA8_OES, false);
     // hidInit();
@@ -179,7 +177,7 @@ AddWEBROGUEDisplay()
 
     // FIXME
     int width, height;
-    webrogue_gfx_window_size(&width, &height);
+    webroguegfx_window_size(&width, &height);
     mode.w = width;
     mode.h = height;
     mode.refresh_rate = 60;
@@ -217,7 +215,7 @@ static void WEBROGUE_GetDisplayModes(_THIS, SDL_VideoDisplay *display)
     SDL_zero(mode);
 
     int width, height;
-    webrogue_gfx_window_size(&width, &height);
+    webroguegfx_window_size(&width, &height);
     mode.w = width;
     mode.h = height;
     mode.refresh_rate = 60;
@@ -248,7 +246,7 @@ static int WEBROGUE_GetDisplayBounds(_THIS, SDL_VideoDisplay *display, SDL_Rect 
         return -1;
     }
     int width, height;
-    webrogue_gfx_window_size(&width, &height);
+    webroguegfx_window_size(&width, &height);
     // FIXME use real data
     rect->x = 0;
     rect->y = 0;
@@ -260,13 +258,13 @@ static int WEBROGUE_GetDisplayBounds(_THIS, SDL_VideoDisplay *display, SDL_Rect 
 
 static int WEBROGUE_CreateWindow(_THIS, SDL_Window *window)
 {
-    SDL_VideoData *driverdata = (SDL_VideoData *) _this->driverdata;
+    SDL_VideoData *driverdata = (SDL_VideoData *)_this->driverdata;
     DisplayDriverData *display_data;
     SDL_WindowData *window_data = (SDL_WindowData *)SDL_calloc(1, sizeof(SDL_WindowData));
     if (!window_data) {
         return SDL_OutOfMemory();
     }
-    webrogue_gfx_make_window();
+    webroguegfx_make_window();
     display_data = (DisplayDriverData *)SDL_GetDisplayDriverData(window->display_index);
     window->driverdata = window_data;
 
