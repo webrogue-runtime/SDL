@@ -61,15 +61,6 @@ void WEBROGUE_PumpEvents(_THIS)
         }
     }
     WR_NOT_IMPLEMENTED;
-    // hidScanInput();
-    // N3DS_PollTouch(_this);
-
-    // if (!aptMainLoop()) {
-    //     SDL_Event ev;
-    //     ev.type = SDL_QUIT;
-    //     SDL_PushEvent(&ev);
-    //     return;
-    // }
 }
 
 #endif /* SDL_VIDEO_DRIVER_WEBROGUE */

@@ -54,8 +54,6 @@ void WEBROGUE_GLES_UnloadLibrary(_THIS)
     // TODO
     // WR_NOT_IMPLEMENTED;
     return;
-    // /* FIXME: Support dynamic linking when PNACL supports it */
-    // glTerminatePPAPI();
 }
 
 int WEBROGUE_GLES_SetSwapInterval(_THIS, int interval)
@@ -63,15 +61,14 @@ int WEBROGUE_GLES_SetSwapInterval(_THIS, int interval)
     // WR_NOT_IMPLEMENTED;
     // return 0;
     // /* STUB */
-    // return SDL_Unsupported();
+    return SDL_Unsupported();
 }
 
 int WEBROGUE_GLES_GetSwapInterval(_THIS)
 {
-    WR_NOT_IMPLEMENTED;
-    return 0;
-    // /* STUB */
-    // return 0;
+    int interval;
+    webroguegfx_get_gl_swap_interval(&interval);
+    return interval;
 }
 
 // XVisualInfo *X11_GLES_GetVisual(_THIS, Display *display, int screen)
