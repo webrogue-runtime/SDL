@@ -140,7 +140,7 @@ endif()
 #  for the time being. This default will change to ON once this becomes
 #  commonly supported in browsers or the Emscripten team makes a single
 #  binary work everywhere.
-if (UNIX_OR_MAC_SYS AND NOT EMSCRIPTEN)
+if (WASI OR UNIX_OR_MAC_SYS AND NOT EMSCRIPTEN)
   set(SDL_PTHREADS_DEFAULT ON)
 else()
   set(SDL_PTHREADS_DEFAULT OFF)
@@ -2930,6 +2930,27 @@ elseif(N3DS)
   set(HAVE_SDL_LOCALE TRUE)
 
   sdl_glob_sources("${SDL3_SOURCE_DIR}/src/io/n3ds/*.c")
+elseif(WASI)
+  CheckPTHREAD()
+
+  set(SDL_TIMER_UNIX 1)
+  sdl_glob_sources("${SDL3_SOURCE_DIR}/src/timer/unix/*.c")
+  set(HAVE_SDL_TIMERS TRUE)
+
+  if(SDL_VIDEO)
+    sdl_glob_sources("${SDL3_SOURCE_DIR}/src/video/webrogue/*.c")
+    set(HAVE_SDL_VIDEO TRUE)
+
+    set(SDL_VIDEO_DRIVER_WEBROGUE 1)
+    set(HAVE_OPENGLES TRUE)
+    set(SDL_VIDEO_OPENGL_ES2 1)
+    set(SDL_VIDEO_RENDER_OGL_ES2 1)
+  endif()
+
+
+  if(TARGET webroguegfx)
+    list(APPEND SDL_CMAKE_DEPENDS webroguegfx)
+  endif()
 endif()
 
 sdl_sources(${SDL3_SOURCE_DIR}/src/dialog/SDL_dialog.c)
@@ -3586,7 +3607,7 @@ if(SDL_SHARED)
   export(TARGETS SDL3-shared NAMESPACE "SDL3::" FILE "SDL3sharedTargets.cmake")
 endif()
 
-if(SDL_STATIC)
+if(SDL_STATIC AND NOT TARGET webroguegfx)
   export(TARGETS SDL3-static NAMESPACE "SDL3::" FILE "SDL3staticTargets.cmake")
 endif()
 

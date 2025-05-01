@@ -98,7 +98,7 @@ bool SDL_SYS_CreateThread(SDL_Thread *thread,
 #endif
         checked_setname = true;
     }
-    #endif
+#endif
 
     // Set the thread attributes
     if (pthread_attr_init(&type) != 0) {
@@ -185,7 +185,7 @@ SDL_ThreadID SDL_GetCurrentThreadID(void)
 
 bool SDL_SYS_SetThreadPriority(SDL_ThreadPriority priority)
 {
-#ifdef SDL_PLATFORM_RISCOS
+#if defined(SDL_PLATFORM_RISCOS) || defined(__wasi__)
     // FIXME: Setting thread priority does not seem to be supported
     return true;
 #else

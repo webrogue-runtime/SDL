@@ -146,6 +146,9 @@ static VideoBootStrap *bootstrap[] = {
 #ifdef SDL_VIDEO_DRIVER_OPENVR
     &OPENVR_bootstrap,
 #endif
+#ifdef SDL_VIDEO_DRIVER_WEBROGUE
+    &WEBROGUE_bootstrap,
+#endif
     NULL
 };
 
@@ -652,7 +655,7 @@ bool SDL_VideoInit(const char *driver_name)
         while (driver_attempt && *driver_attempt != 0 && !video) {
             const char *driver_attempt_end = SDL_strchr(driver_attempt, ',');
             size_t driver_attempt_len = (driver_attempt_end) ? (driver_attempt_end - driver_attempt)
-                                                                     : SDL_strlen(driver_attempt);
+                                                             : SDL_strlen(driver_attempt);
 
             for (i = 0; bootstrap[i]; ++i) {
                 if (!bootstrap[i]->is_preferred &&
@@ -3575,7 +3578,7 @@ bool SDL_UpdateWindowSurface(SDL_Window *window)
 }
 
 bool SDL_UpdateWindowSurfaceRects(SDL_Window *window, const SDL_Rect *rects,
-                                 int numrects)
+                                  int numrects)
 {
     CHECK_WINDOW_MAGIC(window, false);
 
@@ -5327,7 +5330,7 @@ bool SDL_GL_SetSwapInterval(int interval)
 bool SDL_GL_GetSwapInterval(int *interval)
 {
     if (!interval) {
-       return SDL_InvalidParamError("interval");
+        return SDL_InvalidParamError("interval");
     }
 
     *interval = 0;
@@ -5740,7 +5743,7 @@ bool SDL_ShowMessageBox(const SDL_MessageBoxData *messageboxdata, int *buttonID)
             while (driver_attempt && (*driver_attempt != 0) && !result) {
                 const char *driver_attempt_end = SDL_strchr(driver_attempt, ',');
                 size_t driver_attempt_len = (driver_attempt_end) ? (driver_attempt_end - driver_attempt)
-                                                                     : SDL_strlen(driver_attempt);
+                                                                 : SDL_strlen(driver_attempt);
                 for (int i = 0; bootstrap[i]; ++i) {
                     if (bootstrap[i]->ShowMessageBox && (driver_attempt_len == SDL_strlen(bootstrap[i]->name)) &&
                         (SDL_strncasecmp(bootstrap[i]->name, driver_attempt, driver_attempt_len) == 0)) {
@@ -6005,9 +6008,9 @@ char const* const* SDL_Vulkan_GetInstanceExtensions(Uint32 *count)
 }
 
 bool SDL_Vulkan_CreateSurface(SDL_Window *window,
-                                  VkInstance instance,
-                                  const struct VkAllocationCallbacks *allocator,
-                                  VkSurfaceKHR *surface)
+                              VkInstance instance,
+                              const struct VkAllocationCallbacks *allocator,
+                              VkSurfaceKHR *surface)
 {
     CHECK_WINDOW_MAGIC(window, false);
 
@@ -6036,8 +6039,8 @@ void SDL_Vulkan_DestroySurface(VkInstance instance,
 }
 
 bool SDL_Vulkan_GetPresentationSupport(VkInstance instance,
-                                           VkPhysicalDevice physicalDevice,
-                                           Uint32 queueFamilyIndex)
+                                       VkPhysicalDevice physicalDevice,
+                                       Uint32 queueFamilyIndex)
 {
     if (!_this) {
         SDL_UninitializedVideo();
