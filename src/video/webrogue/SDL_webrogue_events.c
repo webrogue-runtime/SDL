@@ -26,19 +26,38 @@
 #include "SDL_webrogue_events_c.h"
 #include "SDL_webrogue_touch.h"
 #include "SDL_webrogue_unimplemented.h"
+#include "SDL_webrogue_video.h"
 #include <webroguegfx/webroguegfx.h>
 
 void WEBROGUE_PumpEvents(SDL_VideoDevice *_this)
 {
+    SDL_VideoData *data = (SDL_VideoData *)_this->internal;
     webrogue_event event;
     while (1) {
         event = webroguegfx_poll();
         switch (event.type) {
+        case WEBROGUE_EVENT_TYPE_MOUSE_BUTTON:
+        {
+            SDL_SendMouseButton(0, data->latest_window, SDL_DEFAULT_MOUSE_ID, event.inner.mouse_button.button, event.inner.mouse_button.down);
+        } break;
+        case WEBROGUE_EVENT_TYPE_MOUSE_MOTION:
+        {
+            SDL_SendMouseMotion(0, data->latest_window, SDL_DEFAULT_MOUSE_ID, false, event.inner.mouse_motion.x, event.inner.mouse_motion.y);
+        } break;
+        case WEBROGUE_EVENT_TYPE_KEY:
+        {
+            SDL_SendKeyboardKey(0, SDL_GLOBAL_KEYBOARD_ID, 0, event.inner.key.scancode, event.inner.key.down);
+        } break;
+        case WEBROGUE_EVENT_TYPE_QUIT:
+        {
+            SDL_Event ev;
+            ev.type = SDL_EVENT_QUIT;
+            SDL_PushEvent(&ev);
+        } break;
         case WEBROGUE_EVENT_TYPE_INVALID:
+        {
             return;
-
-        default:
-            break;
+        }
         }
     }
     WR_NOT_IMPLEMENTED;
