@@ -128,7 +128,7 @@ static SDL_VideoDevice *WEBROGUE_CreateDevice(void)
 
     device->free = WEBROGUE_DeleteDevice;
 
-    device->quirk_flags = VIDEO_DEVICE_QUIRK_FULLSCREEN_ONLY;
+    device->quirk_flags = 0; // VIDEO_DEVICE_QUIRK_FULLSCREEN_ONLY;
 
     return device;
 }
@@ -269,6 +269,11 @@ static int WEBROGUE_CreateWindow(_THIS, SDL_Window *window)
     window->driverdata = window_data;
 
     driverdata->latest_window = window;
+
+    int width, height;
+    webroguegfx_window_size(&width, &height);
+    window->w = width;
+    window->h = height;
 
     SDL_SetKeyboardFocus(window);
     return 0;

@@ -54,6 +54,18 @@ void WEBROGUE_PumpEvents(_THIS)
             ev.type = SDL_QUIT;
             SDL_PushEvent(&ev);
         } break;
+        case WEBROGUE_EVENT_TYPE_WINDOW_RESIZED:
+        {
+            int width, height;
+            webroguegfx_window_size(&width, &height);
+            SDL_SendWindowEvent(data->latest_window, SDL_WINDOWEVENT_RESIZED, width, height);
+        } break;
+        // case WEBROGUE_EVENT_TYPE_GL_RESIZED:
+        // {
+        //     int width, height;
+        //     webroguegfx_gl_size(&width, &height);
+        //     SDL_SendWindowEvent(data->latest_window, SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED, width, height);
+        // } break;
         case WEBROGUE_EVENT_TYPE_INVALID:
         {
             return;
