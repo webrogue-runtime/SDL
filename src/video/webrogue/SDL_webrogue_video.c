@@ -146,10 +146,10 @@ static bool AddWEBROGUEDisplay()
         return false;
     }
 
-    int width, height;
-    webroguegfx_window_size(&width, &height);
-    mode.w = width;
-    mode.h = height;
+    // int width, height;
+    // webroguegfx_window_size(&width, &height);
+    mode.w = 100;
+    mode.h = 100;
     mode.refresh_rate = 60.0f;
     mode.format = SDL_PIXELFORMAT_RGBA32;
     mode.internal = modedata;
@@ -180,10 +180,10 @@ static bool WEBROGUE_GetDisplayModes(SDL_VideoDevice *_this, SDL_VideoDisplay *d
 
     SDL_zero(mode);
 
-    int width, height;
-    webroguegfx_window_size(&width, &height);
-    mode.w = width;
-    mode.h = height;
+    // int width, height;
+    // webroguegfx_window_size(&width, &height);
+    mode.w = 100;
+    mode.h = 100;
     mode.refresh_rate = 60.0f;
     mode.format = SDL_PIXELFORMAT_RGBA32;
     mode.internal = modedata;
@@ -212,12 +212,12 @@ static bool WEBROGUE_GetDisplayBounds(SDL_VideoDevice *_this, SDL_VideoDisplay *
         return false;
     }
 
-    int width, height;
-    webroguegfx_window_size(&width, &height);
+    // int width, height;
+    // webroguegfx_window_size(&width, &height);
     rect->x = 0;
     rect->y = 0;
-    rect->w = 500;
-    rect->h = 500;
+    rect->w = 100;
+    rect->h = 100;
     return true;
 }
 
@@ -229,13 +229,28 @@ static bool WEBROGUE_CreateWindow(SDL_VideoDevice *_this, SDL_Window *window, SD
     if (!window_data) {
         return false;
     }
-    webroguegfx_make_window();
+    webroguegfx_make_window(&window_data->wr_window);
     int width, height;
-    webroguegfx_window_size(&width, &height);
+    webroguegfx_window_size(window_data->wr_window, &width, &height);
     window->w = width;
     window->h = height;
     display_data = SDL_GetDisplayDriverDataForWindow(window);
     window->internal = window_data;
+
+#ifdef SDL_VIDEO_OPENGL_EGL
+    if (window->flags & SDL_WINDOW_OPENGL) {
+        if (!_this->egl_data) {
+            if (SDL_GL_LoadLibrary(NULL) < 0) {
+                return -1;
+            }
+        }
+        window_data->egl_surface = SDL_EGL_CreateSurface(_this, window, window_data->wr_window);
+
+        if (window_data->egl_surface == EGL_NO_SURFACE) {
+            return SDL_SetError("Could not create GLES window surface");
+        }
+    }
+#endif
 
     internal->latest_window = window;
 

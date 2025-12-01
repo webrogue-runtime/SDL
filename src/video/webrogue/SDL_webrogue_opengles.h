@@ -30,13 +30,16 @@
 // OpenGLES functions
 extern bool WEBROGUE_GLES_LoadLibrary(SDL_VideoDevice *_this, const char *path);
 extern void WEBROGUE_GLES_UnloadLibrary(SDL_VideoDevice *_this);
-extern SDL_FunctionPointer WEBROGUE_GLES_GetProcAddress(SDL_VideoDevice *_this, const char *proc);
-extern bool WEBROGUE_GLES_SetSwapInterval(SDL_VideoDevice *_this, int interval);
-extern bool WEBROGUE_GLES_GetSwapInterval(SDL_VideoDevice *_this, int *interval);
+#define WEBROGUE_GLES_GetProcAddress  SDL_EGL_GetProcAddressInternal
+#define WEBROGUE_GLES_SetSwapInterval SDL_EGL_SetSwapInterval
+#define WEBROGUE_GLES_GetSwapInterval SDL_EGL_GetSwapInterval
 extern SDL_GLContext WEBROGUE_GLES_CreateContext(SDL_VideoDevice *_this, SDL_Window *window);
-extern bool WEBROGUE_GLES_DestroyContext(SDL_VideoDevice *_this, SDL_GLContext context);
 extern bool WEBROGUE_GLES_SwapWindow(SDL_VideoDevice *_this, SDL_Window *window);
 extern bool WEBROGUE_GLES_MakeCurrent(SDL_VideoDevice *_this, SDL_Window *window, SDL_GLContext context);
+#define WEBROGUE_GLES_DestroyContext   SDL_EGL_DestroyContext
+
+#define WEBROGUE_GLES_UnloadLibrary   SDL_EGL_UnloadLibrary
+#define WEBROGUE_GLES_GetAttribute    SDL_EGL_GetAttribute
 
 #endif // SDL_VIDEO_DRIVER_WEBROGUE
 

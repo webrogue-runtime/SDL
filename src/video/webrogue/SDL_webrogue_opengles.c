@@ -29,29 +29,59 @@
 #include "SDL_webrogue_video.h"
 #include <webroguegfx/webroguegfx.h>
 
+#define LOAD_FUNC(TYPE, NAME) _this->egl_data->NAME = NAME;
+#define LOAD_FUNC_EGLEXT(TYPE, NAME) \
+    _this->egl_data->NAME = (TYPE)_this->egl_data->eglGetProcAddress(#NAME);
+
 bool WEBROGUE_GLES_LoadLibrary(SDL_VideoDevice *_this, const char *path)
 {
-    webroguegfx_init_gl();
-    return true;
-}
+    _this->egl_data = (struct SDL_EGL_VideoData *)SDL_calloc(1, sizeof(SDL_EGL_VideoData));
+    if (!_this->egl_data) {
+        return false;
+    }
+    _this->egl_data->eglGetProcAddress = eglGetProcAddress;
+    
+    // Load new function pointers
+    LOAD_FUNC(PFNEGLGETDISPLAYPROC, eglGetDisplay);
+    LOAD_FUNC(PFNEGLINITIALIZEPROC, eglInitialize);
+    LOAD_FUNC(PFNEGLTERMINATEPROC, eglTerminate);
+    LOAD_FUNC(PFNEGLGETPROCADDRESSPROC, eglGetProcAddress);
+    LOAD_FUNC(PFNEGLCHOOSECONFIGPROC, eglChooseConfig);
+    LOAD_FUNC(PFNEGLCREATECONTEXTPROC, eglCreateContext);
+    LOAD_FUNC(PFNEGLDESTROYCONTEXTPROC, eglDestroyContext);
+    LOAD_FUNC(PFNEGLCREATEPBUFFERSURFACEPROC, eglCreatePbufferSurface);
+    LOAD_FUNC(PFNEGLCREATEWINDOWSURFACEPROC, eglCreateWindowSurface);
+    LOAD_FUNC(PFNEGLDESTROYSURFACEPROC, eglDestroySurface);
+    LOAD_FUNC(PFNEGLMAKECURRENTPROC, eglMakeCurrent);
+    LOAD_FUNC(PFNEGLSWAPBUFFERSPROC, eglSwapBuffers);
+    LOAD_FUNC(PFNEGLSWAPINTERVALPROC, eglSwapInterval);
+    LOAD_FUNC(PFNEGLQUERYSTRINGPROC, eglQueryString);
+    LOAD_FUNC(PFNEGLGETCONFIGATTRIBPROC, eglGetConfigAttrib);
+    LOAD_FUNC(PFNEGLWAITNATIVEPROC, eglWaitNative);
+    LOAD_FUNC(PFNEGLWAITGLPROC, eglWaitGL);
+    LOAD_FUNC(PFNEGLBINDAPIPROC, eglBindAPI);
+    LOAD_FUNC(PFNEGLGETERRORPROC, eglGetError);
+    LOAD_FUNC_EGLEXT(PFNEGLQUERYDEVICESEXTPROC, eglQueryDevicesEXT);
+    LOAD_FUNC_EGLEXT(PFNEGLGETPLATFORMDISPLAYEXTPROC, eglGetPlatformDisplayEXT);
+    // Atomic functions
+    LOAD_FUNC_EGLEXT(PFNEGLCREATESYNCKHRPROC, eglCreateSyncKHR);
+    LOAD_FUNC_EGLEXT(PFNEGLDESTROYSYNCKHRPROC, eglDestroySyncKHR);
+    LOAD_FUNC_EGLEXT(PFNEGLDUPNATIVEFENCEFDANDROIDPROC, eglDupNativeFenceFDANDROID);
+    LOAD_FUNC_EGLEXT(PFNEGLWAITSYNCKHRPROC, eglWaitSyncKHR);
+    LOAD_FUNC_EGLEXT(PFNEGLCLIENTWAITSYNCKHRPROC, eglClientWaitSyncKHR);
+    // Atomic functions end
 
-void WEBROGUE_GLES_UnloadLibrary(SDL_VideoDevice *_this)
-{
-}
+    _this->egl_data->egl_display = _this->egl_data->eglGetDisplay(EGL_DEFAULT_DISPLAY);
 
-SDL_FunctionPointer WEBROGUE_GLES_GetProcAddress(SDL_VideoDevice *_this, const char *proc)
-{
-    return webroguegfx_gl_loader(proc);
-}
+    if (_this->egl_data->eglInitialize(_this->egl_data->egl_display, NULL, NULL) != EGL_TRUE) {
+        _this->gl_config.driver_loaded = 0;
+        *_this->gl_config.driver_path = '\0';
+        return SDL_SetError("Could not initialize EGL");
+    }
 
-bool WEBROGUE_GLES_SetSwapInterval(SDL_VideoDevice *_this, int interval)
-{
-    return true;
-}
+    *_this->gl_config.driver_path = '\0';
+    _this->egl_data->is_offscreen = false;
 
-bool WEBROGUE_GLES_GetSwapInterval(SDL_VideoDevice *_this, int *interval)
-{
-    webroguegfx_get_gl_swap_interval(interval);
     return true;
 }
 
@@ -59,53 +89,7 @@ typedef struct WEBROGUE_GLContext
 {
 } WEBROGUE_GLContext;
 
-SDL_GLContext WEBROGUE_GLES_CreateContext(SDL_VideoDevice *_this, SDL_Window *window)
-{
-    SDL_WindowData *window_data;
-
-    window_data = window->internal;
-
-    if (window_data->gl_context) {
-        SDL_SetError("Cannot create multiple contexts per window");
-        return NULL;
-    }
-
-    WEBROGUE_GLContext *context = SDL_malloc(sizeof(WEBROGUE_GLContext));
-
-    if (!context) {
-        SDL_SetError("Could not create context");
-        return NULL;
-    }
-
-    window_data->gl_context = (SDL_GLContext)context;
-
-    return (SDL_GLContext)context;
-}
-
-bool WEBROGUE_GLES_DestroyContext(SDL_VideoDevice *_this, SDL_GLContext context)
-{
-    return true;
-}
-
-bool WEBROGUE_GLES_SwapWindow(SDL_VideoDevice *_this, SDL_Window *window)
-{
-    webroguegfx_present();
-    return true;
-}
-
-bool WEBROGUE_GLES_MakeCurrent(SDL_VideoDevice *_this, SDL_Window *window, SDL_GLContext context)
-{
-    // it isn't possible to reuse contexts across canvases
-    if (window && context) {
-        SDL_WindowData *window_data = window->internal;
-
-        if (context != window_data->gl_context) {
-            return SDL_SetError("Cannot make context current to another window");
-        }
-    }
-
-    webroguegfx_init_gl();
-    return true;
-}
-
+SDL_EGL_CreateContext_impl(WEBROGUE)
+SDL_EGL_SwapWindow_impl(WEBROGUE)
+SDL_EGL_MakeCurrent_impl(WEBROGUE)
 #endif // SDL_VIDEO_DRIVER_WEBROGUE
