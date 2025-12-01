@@ -26,6 +26,7 @@
 #ifdef SDL_VIDEO_DRIVER_WEBROGUE
 
 #include "../SDL_sysvideo.h"
+#include "../SDL_egl_c.h"
 #include "SDL_webroguevideo.h"
 
 typedef struct SDL_PrivateGLESData
@@ -38,14 +39,16 @@ typedef struct SDL_PrivateGLESData
 /* OpenGLES functions */
 
 extern int WEBROGUE_GLES_LoadLibrary(_THIS, const char *path);
-extern void *WEBROGUE_GLES_GetProcAddress(_THIS, const char *proc);
-extern void WEBROGUE_GLES_UnloadLibrary(_THIS);
-extern int WEBROGUE_GLES_SetSwapInterval(_THIS, int interval);
-extern int WEBROGUE_GLES_GetSwapInterval(_THIS);
+#define WEBROGUE_GLES_GetProcAddress SDL_EGL_GetProcAddress
+#define WEBROGUE_GLES_SetSwapInterval SDL_EGL_SetSwapInterval
+#define WEBROGUE_GLES_GetSwapInterval SDL_EGL_GetSwapInterval
 extern SDL_GLContext WEBROGUE_GLES_CreateContext(_THIS, SDL_Window * window);
 extern int WEBROGUE_GLES_SwapWindow(_THIS, SDL_Window * window);
 extern int WEBROGUE_GLES_MakeCurrent(_THIS, SDL_Window * window, SDL_GLContext context);
-extern void WEBROGUE_GLES_DeleteContext(_THIS, SDL_GLContext context);
+#define WEBROGUE_GLES_DeleteContext SDL_EGL_DeleteContext
+
+#define WEBROGUE_GLES_GetAttribute SDL_EGL_GetAttribute
+#define WEBROGUE_GLES_UnloadLibrary SDL_EGL_UnloadLibrary
 
 #endif /* SDL_VIDEO_DRIVER_WEBROGUE */
 

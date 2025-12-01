@@ -24,6 +24,8 @@
 #define SDL_webroguevideo_h_\
 
 #include "../SDL_sysvideo.h"
+#include "../SDL_egl_c.h"
+#include <webroguegfx/webroguegfx.h>
 
 typedef struct SDL_VideoData
 {
@@ -32,6 +34,11 @@ typedef struct SDL_VideoData
 
 typedef struct SDL_WindowData
 {
+   wr_window wr_window;
+   
+#ifdef SDL_VIDEO_OPENGL_EGL
+   EGLSurface egl_surface;
+#endif
 } SDL_WindowData;
 
 #endif /* SDL_webroguevideo_h_ */

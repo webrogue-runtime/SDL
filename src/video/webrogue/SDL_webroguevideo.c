@@ -176,10 +176,12 @@ AddWEBROGUEDisplay()
     }
 
     // FIXME
-    int width, height;
-    webroguegfx_window_size(&width, &height);
-    mode.w = width;
-    mode.h = height;
+    // int width, height;
+    // webroguegfx_window_size(&width, &height);
+    // mode.w = width;
+    // mode.h = height;
+    mode.w = 100;
+    mode.h = 100;
     mode.refresh_rate = 60;
     mode.format = SDL_PIXELFORMAT_RGBA8888;
     mode.driverdata = modedata;
@@ -214,10 +216,13 @@ static void WEBROGUE_GetDisplayModes(_THIS, SDL_VideoDisplay *display)
 
     SDL_zero(mode);
 
-    int width, height;
-    webroguegfx_window_size(&width, &height);
-    mode.w = width;
-    mode.h = height;
+    // FIXME 
+    // int width, height;
+    // webroguegfx_window_size(&width, &height);
+    // mode.w = width;
+    // mode.h = height;
+    mode.w = 100;
+    mode.h = 100;
     mode.refresh_rate = 60;
     mode.format = SDL_PIXELFORMAT_RGBA8888;
     mode.driverdata = modedata;
@@ -245,13 +250,15 @@ static int WEBROGUE_GetDisplayBounds(_THIS, SDL_VideoDisplay *display, SDL_Rect 
         WR_NOT_IMPLEMENTED;
         return -1;
     }
-    int width, height;
-    webroguegfx_window_size(&width, &height);
+    // int width, height;
+    // webroguegfx_window_size(&width, &height);
     // FIXME use real data
     rect->x = 0;
     rect->y = 0;
-    rect->w = width;
-    rect->h = height;
+    // rect->w = width;
+    // rect->h = height;
+    rect->x = 100;
+    rect->y = 100;
 
     return 0;
 }
@@ -264,14 +271,29 @@ static int WEBROGUE_CreateWindow(_THIS, SDL_Window *window)
     if (!window_data) {
         return SDL_OutOfMemory();
     }
-    webroguegfx_make_window();
+    webroguegfx_make_window(&window_data->wr_window);
     display_data = (DisplayDriverData *)SDL_GetDisplayDriverData(window->display_index);
     window->driverdata = window_data;
+
+#ifdef SDL_VIDEO_OPENGL_EGL
+    if (window->flags & SDL_WINDOW_OPENGL) {
+        if (!_this->egl_data) {
+            if (SDL_GL_LoadLibrary(NULL) < 0) {
+                return -1;
+            }
+        }
+        window_data->egl_surface = SDL_EGL_CreateSurface(_this, window_data->wr_window);
+
+        if (window_data->egl_surface == EGL_NO_SURFACE) {
+            return SDL_SetError("Could not create GLES window surface");
+        }
+    }
+#endif
 
     driverdata->latest_window = window;
 
     int width, height;
-    webroguegfx_window_size(&width, &height);
+    webroguegfx_window_size(window_data->wr_window, &width, &height);
     window->w = width;
     window->h = height;
 

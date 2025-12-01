@@ -32,169 +32,57 @@
 
 // /* EGL implementation of SDL OpenGL support */
 
+#define LOAD_FUNC(NAME) _this->egl_data->NAME = NAME;
+
 int WEBROGUE_GLES_LoadLibrary(_THIS, const char *path)
 {
-    webroguegfx_init_gl();
+    _this->egl_data = (struct SDL_EGL_VideoData *) SDL_calloc(1, sizeof(SDL_EGL_VideoData));
+    if (!_this->egl_data) {
+        return SDL_OutOfMemory();
+    }
+
+    _this->egl_data->eglGetProcAddress = (void *(EGLAPIENTRY *)(const char *)) eglGetProcAddress;
+
+    LOAD_FUNC(eglGetDisplay);
+    LOAD_FUNC(eglInitialize);
+    LOAD_FUNC(eglTerminate);
+    LOAD_FUNC(eglChooseConfig);
+    LOAD_FUNC(eglGetConfigAttrib);
+    LOAD_FUNC(eglCreateContext);
+    LOAD_FUNC(eglDestroyContext);
+    LOAD_FUNC(eglCreateWindowSurface);
+    LOAD_FUNC(eglDestroySurface);
+    LOAD_FUNC(eglMakeCurrent);
+    LOAD_FUNC(eglSwapBuffers);
+    LOAD_FUNC(eglSwapInterval);
+    LOAD_FUNC(eglWaitNative);
+    LOAD_FUNC(eglWaitGL);
+    LOAD_FUNC(eglBindAPI);
+    LOAD_FUNC(eglQueryString);
+    LOAD_FUNC(eglGetError);
+
+    _this->egl_data->egl_display = _this->egl_data->eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    if (!_this->egl_data->egl_display) {
+        return SDL_SetError("Could not get EGL display");
+    }
+
+    if (_this->egl_data->eglInitialize(_this->egl_data->egl_display, NULL, NULL) != EGL_TRUE) {
+        return SDL_SetError("Could not initialize EGL");
+    }
+
+    *_this->gl_config.driver_path = '\0';
+
     return 0;
     //     SDL_VideoData *data = (SDL_VideoData *)_this->driverdata;
 }
-
-void *WEBROGUE_GLES_GetProcAddress(_THIS, const char *proc)
-{
-    return webroguegfx_gl_loader(proc);
-    // #ifdef HAVE_DLOPEN
-    //     return dlsym( 0 /* RTLD_DEFAULT */, proc);
-    // #else
-    //     return NULL;
-    // #endif
-}
-
-void WEBROGUE_GLES_UnloadLibrary(_THIS)
-{
-    // TODO
-    // WR_NOT_IMPLEMENTED;
-    return;
-}
-
-int WEBROGUE_GLES_SetSwapInterval(_THIS, int interval)
-{
-    // WR_NOT_IMPLEMENTED;
-    // return 0;
-    // /* STUB */
-    return SDL_Unsupported();
-}
-
-int WEBROGUE_GLES_GetSwapInterval(_THIS)
-{
-    int interval;
-    webroguegfx_get_gl_swap_interval(&interval);
-    return interval;
-}
-
-// XVisualInfo *X11_GLES_GetVisual(_THIS, Display *display, int screen)
-// {
-
-//     XVisualInfo *egl_visualinfo = NULL;
-//     EGLint visual_id;
-//     XVisualInfo vi_in;
-//     int out_count;
-
-//     if (!_this->egl_data) {
-//         /* The EGL library wasn't loaded, SDL_GetError() should have info */
-//         return NULL;
-//     }
-
-//     if (_this->egl_data->eglGetConfigAttrib(_this->egl_data->egl_display,
-//                                             _this->egl_data->egl_config,
-//                                             EGL_NATIVE_VISUAL_ID,
-//                                             &visual_id) == EGL_FALSE ||
-//         !visual_id) {
-//         /* Use the default visual when all else fails */
-//         vi_in.screen = screen;
-//         egl_visualinfo = X11_XGetVisualInfo(display,
-//                                             VisualScreenMask,
-//                                             &vi_in, &out_count);
-//     } else {
-//         vi_in.screen = screen;
-//         vi_in.visualid = visual_id;
-//         egl_visualinfo = X11_XGetVisualInfo(display, VisualScreenMask | VisualIDMask, &vi_in, &out_count);
-//     }
-
-//     return egl_visualinfo;
-// }
 
 typedef struct WEBROGUE_GLContext
 {
 } WEBROGUE_GLContext;
 
-SDL_GLContext WEBROGUE_GLES_CreateContext(_THIS, SDL_Window *window)
-{
-    WEBROGUE_GLContext *context = 0;
-    // WEBROGUE_GLContext *share_context = 0;
-    SDL_VideoData *driverdata = (SDL_VideoData *)_this->driverdata;
-    int i = 0;
-
-    // if (_this->gl_config.share_with_current_context) {
-    //     share_context = (WEBROGUE_GLContext*) SDL_GL_GetCurrentContext();
-    // }
-
-    // attribs[i++] = PP_GRAPHICS3DATTRIB_WIDTH;
-    // attribs[i++] = window->w;
-    // attribs[i++] = PP_GRAPHICS3DATTRIB_HEIGHT;
-    // attribs[i++] = window->h;
-    // attribs[i++] = PP_GRAPHICS3DATTRIB_RED_SIZE;
-    // attribs[i++] = _this->gl_config.red_size;
-    // attribs[i++] = PP_GRAPHICS3DATTRIB_GREEN_SIZE;
-    // attribs[i++] = _this->gl_config.green_size;
-    // attribs[i++] = PP_GRAPHICS3DATTRIB_BLUE_SIZE;
-    // attribs[i++] = _this->gl_config.blue_size;
-
-    // if (_this->gl_config.alpha_size) {
-    //     attribs[i++] = PP_GRAPHICS3DATTRIB_ALPHA_SIZE;
-    //     attribs[i++] = _this->gl_config.alpha_size;
-    // }
-
-    /*if (_this->gl_config.buffer_size) {
-        attribs[i++] = EGL_BUFFER_SIZE;
-        attribs[i++] = _this->gl_config.buffer_size;
-    }*/
-
-    // attribs[i++] = PP_GRAPHICS3DATTRIB_DEPTH_SIZE;
-    // attribs[i++] = _this->gl_config.depth_size;
-
-    // if (_this->gl_config.stencil_size) {
-    //     attribs[i++] = PP_GRAPHICS3DATTRIB_STENCIL_SIZE;
-    //     attribs[i++] = _this->gl_config.stencil_size;
-    // }
-
-    // if (_this->gl_config.multisamplebuffers) {
-    //     attribs[i++] = PP_GRAPHICS3DATTRIB_SAMPLE_BUFFERS;
-    //     attribs[i++] = _this->gl_config.multisamplebuffers;
-    // }
-
-    // if (_this->gl_config.multisamplesamples) {
-    //     attribs[i++] = PP_GRAPHICS3DATTRIB_SAMPLES;
-    //     attribs[i++] = _this->gl_config.multisamplesamples;
-    // }
-
-    // attribs[i++] = PP_GRAPHICS3DATTRIB_NONE;
-
-    context = SDL_malloc(sizeof(WEBROGUE_GLContext));
-
-    if (context) {
-        /* We need to make the context current, otherwise nothing works */
-        SDL_GL_MakeCurrent(window, (SDL_GLContext)context);
-    }
-
-    return (SDL_GLContext)context;
-
-    return context;
-}
-
-int WEBROGUE_GLES_SwapWindow(_THIS, SDL_Window *window)
-{
-    SDL_VideoData *driverdata = (SDL_VideoData *)_this->driverdata;
-    webroguegfx_present();
-    return 0;
-}
-
-int WEBROGUE_GLES_MakeCurrent(_THIS, SDL_Window *window, SDL_GLContext sdl_context)
-{
-    SDL_VideoData *driverdata = (SDL_VideoData *)_this->driverdata;
-    WEBROGUE_GLContext *context = sdl_context;
-    webroguegfx_init_gl();
-    return 0;
-}
-
-void WEBROGUE_GLES_DeleteContext(_THIS, SDL_GLContext context)
-{
-    // TODO
-    // WR_NOT_IMPLEMENTED;
-    return;
-    // SDL_VideoData *driverdata = (SDL_VideoData *) _this->driverdata;
-    // driverdata->ppb_core->ReleaseResource((PP_Resource) context);
-}
-
+SDL_EGL_CreateContext_impl(WEBROGUE)
+    SDL_EGL_SwapWindow_impl(WEBROGUE)
+        SDL_EGL_MakeCurrent_impl(WEBROGUE)
 #endif /* SDL_VIDEO_DRIVER_WEBROGUE */
 
 /* vi: set ts=4 sw=4 expandtab: */

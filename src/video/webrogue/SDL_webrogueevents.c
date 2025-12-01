@@ -57,7 +57,7 @@ void WEBROGUE_PumpEvents(_THIS)
         case WEBROGUE_EVENT_TYPE_WINDOW_RESIZED:
         {
             int width, height;
-            webroguegfx_window_size(&width, &height);
+            webroguegfx_window_size(((SDL_WindowData*)data->latest_window->driverdata)->wr_window, &width, &height);
             SDL_SendWindowEvent(data->latest_window, SDL_WINDOWEVENT_RESIZED, width, height);
         } break;
         // case WEBROGUE_EVENT_TYPE_GL_RESIZED:
