@@ -43,6 +43,7 @@ static bool WEBROGUE_SetDisplayMode(SDL_VideoDevice *_this, SDL_VideoDisplay *di
 static bool WEBROGUE_GetDisplayBounds(SDL_VideoDevice *_this, SDL_VideoDisplay *display, SDL_Rect *rect);
 static bool WEBROGUE_CreateWindow(SDL_VideoDevice *_this, SDL_Window *window, SDL_PropertiesID create_props);
 static void WEBROGUE_DestroyWindow(SDL_VideoDevice *_this, SDL_Window *window);
+static void WEBROGUE_GetWindowSizeInPixels(SDL_VideoDevice *_this, SDL_Window *window, int *w, int *h);
 
 struct SDL_DisplayData
 {
@@ -99,6 +100,8 @@ static SDL_VideoDevice *WEBROGUE_CreateDevice(void)
     device->CreateWindowFramebuffer = SDL_WEBROGUE_CreateWindowFramebuffer;
     device->UpdateWindowFramebuffer = SDL_WEBROGUE_UpdateWindowFramebuffer;
     device->DestroyWindowFramebuffer = SDL_WEBROGUE_DestroyWindowFramebuffer;
+
+    device->GetWindowSizeInPixels = WEBROGUE_GetWindowSizeInPixels;
 
     device->GL_LoadLibrary = WEBROGUE_GLES_LoadLibrary;
     device->GL_GetProcAddress = WEBROGUE_GLES_GetProcAddress;
@@ -264,6 +267,15 @@ static void WEBROGUE_DestroyWindow(SDL_VideoDevice *_this, SDL_Window *window)
         return;
     }
     SDL_free(window->internal);
+}
+
+static void WEBROGUE_GetWindowSizeInPixels(SDL_VideoDevice *_this, SDL_Window *window, int *w, int *h)
+{
+    SDL_WindowData *window_data = (SDL_VideoData *)window->internal;
+    int width, height;
+    webroguegfx_gl_size(window_data->wr_window, &width, &height);
+    *w = width;
+    *h = height;
 }
 
 #endif // SDL_VIDEO_DRIVER_WEBROGUE
