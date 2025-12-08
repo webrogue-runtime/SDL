@@ -44,6 +44,7 @@ static int WEBROGUE_SetDisplayMode(_THIS, SDL_VideoDisplay *display, SDL_Display
 static int WEBROGUE_GetDisplayBounds(_THIS, SDL_VideoDisplay *display, SDL_Rect *rect);
 static int WEBROGUE_CreateWindow(_THIS, SDL_Window *window);
 static void WEBROGUE_DestroyWindow(_THIS, SDL_Window *window);
+static void WEBROGUE_GetWindowSizeInPixels(_THIS, SDL_Window * window, int *w, int *h);
 
 typedef struct
 {
@@ -127,6 +128,8 @@ static SDL_VideoDevice *WEBROGUE_CreateDevice(void)
     device->GL_DeleteContext = WEBROGUE_GLES_DeleteContext;
 
     device->free = WEBROGUE_DeleteDevice;
+
+    device->GetWindowSizeInPixels = WEBROGUE_GetWindowSizeInPixels;
 
     device->quirk_flags = 0; // VIDEO_DEVICE_QUIRK_FULLSCREEN_ONLY;
 
@@ -310,6 +313,14 @@ static void WEBROGUE_DestroyWindow(_THIS, SDL_Window *window)
     //     return;
     // }
     // SDL_free(window->driverdata);
+}
+
+void WEBROGUE_GetWindowSizeInPixels(_THIS, SDL_Window * window, int *w, int *h) {
+    int width, height;
+    SDL_WindowData *window_data = (SDL_WindowData *) window->driverdata;
+    webroguegfx_gl_size(window_data->wr_window, &width, &height);
+    *w = width;
+    *h = height;
 }
 
 #endif /* SDL_VIDEO_DRIVER_WEBROGUE */
