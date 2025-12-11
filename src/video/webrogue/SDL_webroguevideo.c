@@ -29,6 +29,7 @@
 #include "SDL_webrogueevents_c.h"
 #include "SDL_webrogueframebuffer_c.h"
 #include "SDL_webrogueopengles.h"
+#include "SDL_webroguevulkan.h"
 #include "SDL_webrogueswkb.h"
 // #include "SDL_n3dstouch.h"
 #include "SDL_webroguevideo.h"
@@ -117,15 +118,24 @@ static SDL_VideoDevice *WEBROGUE_CreateDevice(void)
     device->UpdateWindowFramebuffer = SDL_WEBROGUE_UpdateWindowFramebuffer;
     device->DestroyWindowFramebuffer = SDL_WEBROGUE_DestroyWindowFramebuffer;
 
-    device->GL_LoadLibrary = WEBROGUE_GLES_LoadLibrary;
-    device->GL_GetProcAddress = WEBROGUE_GLES_GetProcAddress;
-    device->GL_UnloadLibrary = WEBROGUE_GLES_UnloadLibrary;
-    device->GL_CreateContext = WEBROGUE_GLES_CreateContext;
-    device->GL_MakeCurrent = WEBROGUE_GLES_MakeCurrent;
-    device->GL_SetSwapInterval = WEBROGUE_GLES_SetSwapInterval;
-    device->GL_GetSwapInterval = WEBROGUE_GLES_GetSwapInterval;
-    device->GL_SwapWindow = WEBROGUE_GLES_SwapWindow;
-    device->GL_DeleteContext = WEBROGUE_GLES_DeleteContext;
+#ifdef SDL_VIDEO_OPENGL_EGL
+    device->GL_LoadLibrary = Webrogue_GLES_LoadLibrary;
+    device->GL_GetProcAddress = Webrogue_GLES_GetProcAddress;
+    device->GL_UnloadLibrary = Webrogue_GLES_UnloadLibrary;
+    device->GL_CreateContext = Webrogue_GLES_CreateContext;
+    device->GL_MakeCurrent = Webrogue_GLES_MakeCurrent;
+    device->GL_SetSwapInterval = Webrogue_GLES_SetSwapInterval;
+    device->GL_GetSwapInterval = Webrogue_GLES_GetSwapInterval;
+    device->GL_SwapWindow = Webrogue_GLES_SwapWindow;
+    device->GL_DeleteContext = Webrogue_GLES_DeleteContext;
+#endif
+
+#ifdef SDL_VIDEO_VULKAN
+    device->Vulkan_LoadLibrary = Webrogue_Vulkan_LoadLibrary;
+    device->Vulkan_UnloadLibrary = Webrogue_Vulkan_UnloadLibrary;
+    device->Vulkan_GetInstanceExtensions = Webrogue_Vulkan_GetInstanceExtensions;
+    device->Vulkan_CreateSurface = Webrogue_Vulkan_CreateSurface;
+#endif
 
     device->free = WEBROGUE_DeleteDevice;
 

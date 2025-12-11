@@ -20,7 +20,7 @@
 */
 #include "../../SDL_internal.h"
 
-#if defined(SDL_VIDEO_DRIVER_WEBROGUE)
+#if defined(SDL_VIDEO_DRIVER_WEBROGUE) && defined(SDL_VIDEO_OPENGL_EGL)
 
 #include "SDL_webrogue_unimplemented.h"
 #include <webroguegfx/webroguegfx.h>
@@ -34,7 +34,7 @@
 
 #define LOAD_FUNC(NAME) _this->egl_data->NAME = NAME;
 
-int WEBROGUE_GLES_LoadLibrary(_THIS, const char *path)
+int Webrogue_GLES_LoadLibrary(_THIS, const char *path)
 {
     _this->egl_data = (struct SDL_EGL_VideoData *) SDL_calloc(1, sizeof(SDL_EGL_VideoData));
     if (!_this->egl_data) {
@@ -76,13 +76,13 @@ int WEBROGUE_GLES_LoadLibrary(_THIS, const char *path)
     //     SDL_VideoData *data = (SDL_VideoData *)_this->driverdata;
 }
 
-typedef struct WEBROGUE_GLContext
+typedef struct Webrogue_GLContext
 {
-} WEBROGUE_GLContext;
+} Webrogue_GLContext;
 
-SDL_EGL_CreateContext_impl(WEBROGUE)
-    SDL_EGL_SwapWindow_impl(WEBROGUE)
-        SDL_EGL_MakeCurrent_impl(WEBROGUE)
+SDL_EGL_CreateContext_impl(Webrogue)
+    SDL_EGL_SwapWindow_impl(Webrogue)
+        SDL_EGL_MakeCurrent_impl(Webrogue)
 #endif /* SDL_VIDEO_DRIVER_WEBROGUE */
 
 /* vi: set ts=4 sw=4 expandtab: */
