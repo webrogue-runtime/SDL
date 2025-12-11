@@ -20,7 +20,7 @@
 */
 #include "SDL_internal.h"
 
-#ifdef SDL_VIDEO_DRIVER_WEBROGUE
+#if defined(SDL_VIDEO_DRIVER_WEBROGUE) && defined(SDL_VIDEO_OPENGL_EGL)
 
 #include <GLES2/gl2.h>
 
@@ -33,7 +33,7 @@
 #define LOAD_FUNC_EGLEXT(TYPE, NAME) \
     _this->egl_data->NAME = (TYPE)_this->egl_data->eglGetProcAddress(#NAME);
 
-bool WEBROGUE_GLES_LoadLibrary(SDL_VideoDevice *_this, const char *path)
+bool Webrogue_GLES_LoadLibrary(SDL_VideoDevice *_this, const char *path)
 {
     _this->egl_data = (struct SDL_EGL_VideoData *)SDL_calloc(1, sizeof(SDL_EGL_VideoData));
     if (!_this->egl_data) {
@@ -85,11 +85,11 @@ bool WEBROGUE_GLES_LoadLibrary(SDL_VideoDevice *_this, const char *path)
     return true;
 }
 
-typedef struct WEBROGUE_GLContext
+typedef struct Webrogue_GLContext
 {
-} WEBROGUE_GLContext;
+} Webrogue_GLContext;
 
-SDL_EGL_CreateContext_impl(WEBROGUE)
-SDL_EGL_SwapWindow_impl(WEBROGUE)
-SDL_EGL_MakeCurrent_impl(WEBROGUE)
-#endif // SDL_VIDEO_DRIVER_WEBROGUE
+SDL_EGL_CreateContext_impl(Webrogue)
+SDL_EGL_SwapWindow_impl(Webrogue)
+SDL_EGL_MakeCurrent_impl(Webrogue)
+#endif

@@ -28,17 +28,17 @@
 #include "SDL_webrogue_unimplemented.h"
 #include "SDL_webrogue_video.h"
 
-bool SDL_WEBROGUE_CreateWindowFramebuffer(SDL_VideoDevice *_this, SDL_Window *window, SDL_PixelFormat *format, void **pixels, int *pitch)
+bool SDL_Webrogue_CreateWindowFramebuffer(SDL_VideoDevice *_this, SDL_Window *window, SDL_PixelFormat *format, void **pixels, int *pitch)
 {
     WR_NOT_IMPLEMENTED;
 }
 
-bool SDL_WEBROGUE_UpdateWindowFramebuffer(SDL_VideoDevice *_this, SDL_Window *window, const SDL_Rect *rects, int numrects)
+bool SDL_Webrogue_UpdateWindowFramebuffer(SDL_VideoDevice *_this, SDL_Window *window, const SDL_Rect *rects, int numrects)
 {
     WR_NOT_IMPLEMENTED;
 }
 
-void SDL_WEBROGUE_DestroyWindowFramebuffer(SDL_VideoDevice *_this, SDL_Window *window)
+void SDL_Webrogue_DestroyWindowFramebuffer(SDL_VideoDevice *_this, SDL_Window *window)
 {
     WR_NOT_IMPLEMENTED;
 }

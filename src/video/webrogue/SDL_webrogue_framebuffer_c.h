@@ -24,8 +24,8 @@
 
 #include "SDL_internal.h"
 
-extern bool SDL_WEBROGUE_CreateWindowFramebuffer(SDL_VideoDevice *_this, SDL_Window *window, SDL_PixelFormat *format, void **pixels, int *pitch);
-extern bool SDL_WEBROGUE_UpdateWindowFramebuffer(SDL_VideoDevice *_this, SDL_Window *window, const SDL_Rect *rects, int numrects);
-extern void SDL_WEBROGUE_DestroyWindowFramebuffer(SDL_VideoDevice *_this, SDL_Window *window);
+extern bool SDL_Webrogue_CreateWindowFramebuffer(SDL_VideoDevice *_this, SDL_Window *window, SDL_PixelFormat *format, void **pixels, int *pitch);
+extern bool SDL_Webrogue_UpdateWindowFramebuffer(SDL_VideoDevice *_this, SDL_Window *window, const SDL_Rect *rects, int numrects);
+extern void SDL_Webrogue_DestroyWindowFramebuffer(SDL_VideoDevice *_this, SDL_Window *window);
 
 #endif // SDL_webrogue_framebuffer_c_h_

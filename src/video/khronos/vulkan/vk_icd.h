@@ -243,3 +243,10 @@ typedef struct {
   VkIcdSurfaceBase base;
 } VkIcdSurfaceImagePipe;
 #endif // VK_USE_PLATFORM_FUCHSIA
+
+#ifdef VK_USE_PLATFORM_WEBROGUE
+typedef struct {
+    VkIcdSurfaceBase base;
+    const void *pWindow;
+} VkIcdSurfaceWebrogue;
+#endif  // VK_USE_PLATFORM_WEBROGUE

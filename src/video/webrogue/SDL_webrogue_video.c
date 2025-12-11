@@ -30,6 +30,7 @@
 #include "SDL_webrogue_touch.h"
 #include "SDL_webrogue_unimplemented.h"
 #include "SDL_webrogue_video.h"
+#include "SDL_webrogue_vulkan.h"
 #include <webroguegfx/webroguegfx.h>
 
 #define WEBROGUEVID_DRIVER_NAME "webrogue"
@@ -97,21 +98,31 @@ static SDL_VideoDevice *WEBROGUE_CreateDevice(void)
 
     device->PumpEvents = WEBROGUE_PumpEvents;
 
-    device->CreateWindowFramebuffer = SDL_WEBROGUE_CreateWindowFramebuffer;
-    device->UpdateWindowFramebuffer = SDL_WEBROGUE_UpdateWindowFramebuffer;
-    device->DestroyWindowFramebuffer = SDL_WEBROGUE_DestroyWindowFramebuffer;
+    device->CreateWindowFramebuffer = SDL_Webrogue_CreateWindowFramebuffer;
+    device->UpdateWindowFramebuffer = SDL_Webrogue_UpdateWindowFramebuffer;
+    device->DestroyWindowFramebuffer = SDL_Webrogue_DestroyWindowFramebuffer;
 
     device->GetWindowSizeInPixels = WEBROGUE_GetWindowSizeInPixels;
 
-    device->GL_LoadLibrary = WEBROGUE_GLES_LoadLibrary;
-    device->GL_GetProcAddress = WEBROGUE_GLES_GetProcAddress;
-    device->GL_UnloadLibrary = WEBROGUE_GLES_UnloadLibrary;
-    device->GL_CreateContext = WEBROGUE_GLES_CreateContext;
-    device->GL_MakeCurrent = WEBROGUE_GLES_MakeCurrent;
-    device->GL_SetSwapInterval = WEBROGUE_GLES_SetSwapInterval;
-    device->GL_GetSwapInterval = WEBROGUE_GLES_GetSwapInterval;
-    device->GL_SwapWindow = WEBROGUE_GLES_SwapWindow;
-    device->GL_DestroyContext = WEBROGUE_GLES_DestroyContext;
+#ifdef SDL_VIDEO_OPENGL_EGL
+    device->GL_LoadLibrary = Webrogue_GLES_LoadLibrary;
+    device->GL_GetProcAddress = Webrogue_GLES_GetProcAddress;
+    device->GL_UnloadLibrary = Webrogue_GLES_UnloadLibrary;
+    device->GL_CreateContext = Webrogue_GLES_CreateContext;
+    device->GL_MakeCurrent = Webrogue_GLES_MakeCurrent;
+    device->GL_SetSwapInterval = Webrogue_GLES_SetSwapInterval;
+    device->GL_GetSwapInterval = Webrogue_GLES_GetSwapInterval;
+    device->GL_SwapWindow = Webrogue_GLES_SwapWindow;
+    device->GL_DestroyContext = Webrogue_GLES_DestroyContext;
+#endif
+
+#ifdef SDL_VIDEO_VULKAN
+    device->Vulkan_LoadLibrary = Webrogue_Vulkan_LoadLibrary;
+    device->Vulkan_UnloadLibrary = Webrogue_Vulkan_UnloadLibrary;
+    device->Vulkan_GetInstanceExtensions = Webrogue_Vulkan_GetInstanceExtensions;
+    device->Vulkan_CreateSurface = Webrogue_Vulkan_CreateSurface;
+    device->Vulkan_DestroySurface = Webrogue_Vulkan_DestroySurface;
+#endif
 
     device->free = WEBROGUE_DeleteDevice;
 

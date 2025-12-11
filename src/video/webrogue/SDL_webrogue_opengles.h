@@ -23,24 +23,24 @@
 #ifndef SDL_webrogue_opengles_h_
 #define SDL_webrogue_opengles_h_
 
-#ifdef SDL_VIDEO_DRIVER_WEBROGUE
+#if defined(SDL_VIDEO_DRIVER_WEBROGUE) && defined(SDL_VIDEO_OPENGL_EGL)
 
 #include "../SDL_sysvideo.h"
 
 // OpenGLES functions
-extern bool WEBROGUE_GLES_LoadLibrary(SDL_VideoDevice *_this, const char *path);
-extern void WEBROGUE_GLES_UnloadLibrary(SDL_VideoDevice *_this);
-#define WEBROGUE_GLES_GetProcAddress  SDL_EGL_GetProcAddressInternal
-#define WEBROGUE_GLES_SetSwapInterval SDL_EGL_SetSwapInterval
-#define WEBROGUE_GLES_GetSwapInterval SDL_EGL_GetSwapInterval
-extern SDL_GLContext WEBROGUE_GLES_CreateContext(SDL_VideoDevice *_this, SDL_Window *window);
-extern bool WEBROGUE_GLES_SwapWindow(SDL_VideoDevice *_this, SDL_Window *window);
-extern bool WEBROGUE_GLES_MakeCurrent(SDL_VideoDevice *_this, SDL_Window *window, SDL_GLContext context);
-#define WEBROGUE_GLES_DestroyContext   SDL_EGL_DestroyContext
+extern bool Webrogue_GLES_LoadLibrary(SDL_VideoDevice *_this, const char *path);
+extern void Webrogue_GLES_UnloadLibrary(SDL_VideoDevice *_this);
+#define Webrogue_GLES_GetProcAddress  SDL_EGL_GetProcAddressInternal
+#define Webrogue_GLES_SetSwapInterval SDL_EGL_SetSwapInterval
+#define Webrogue_GLES_GetSwapInterval SDL_EGL_GetSwapInterval
+extern SDL_GLContext Webrogue_GLES_CreateContext(SDL_VideoDevice *_this, SDL_Window *window);
+extern bool Webrogue_GLES_SwapWindow(SDL_VideoDevice *_this, SDL_Window *window);
+extern bool Webrogue_GLES_MakeCurrent(SDL_VideoDevice *_this, SDL_Window *window, SDL_GLContext context);
+#define Webrogue_GLES_DestroyContext   SDL_EGL_DestroyContext
 
-#define WEBROGUE_GLES_UnloadLibrary   SDL_EGL_UnloadLibrary
-#define WEBROGUE_GLES_GetAttribute    SDL_EGL_GetAttribute
+#define Webrogue_GLES_UnloadLibrary   SDL_EGL_UnloadLibrary
+#define Webrogue_GLES_GetAttribute    SDL_EGL_GetAttribute
 
-#endif // SDL_VIDEO_DRIVER_WEBROGUE
+#endif
 
 #endif // SDL_webrogue_opengles_h_

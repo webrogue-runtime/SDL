@@ -47,6 +47,10 @@
 #define VK_USE_PLATFORM_XLIB_KHR
 #define VK_USE_PLATFORM_XCB_KHR
 #endif
+#ifdef SDL_VIDEO_DRIVER_WEBROGUE
+#define VK_USE_PLATFORM_WEBROGUE
+#endif
+
 
 #define VK_NO_PROTOTYPES
 #include "./khronos/vulkan/vulkan.h"
