@@ -30,6 +30,105 @@
 #include <webroguegfx/webroguegfx.h>
 
 #define MAP_KEY(wr_key, sdl_key) case WEBROGUE_PHYSICAL_KEY_ ## wr_key: return SDL_SCANCODE_ ## sdl_key;
+#define MAP_NAMED_KEY(wr_key, sdl_key) case WEBROGUE_NAMED_KEY_ ## wr_key: return SDLK_ ## sdl_key;
+
+static SDL_Keycode NamedKeyToKeycode(webrogue_named_key key)
+{
+    switch (key) {
+        MAP_NAMED_KEY(UNKNOWN, UNKNOWN)
+        MAP_NAMED_KEY(ALT, LALT)
+        MAP_NAMED_KEY(ALT_GRAPH, RALT)
+        MAP_NAMED_KEY(CAPS_LOCK, CAPSLOCK)
+        MAP_NAMED_KEY(CONTROL, LCTRL)
+        MAP_NAMED_KEY(NUM_LOCK, NUMLOCKCLEAR)
+        MAP_NAMED_KEY(SCROLL_LOCK, SCROLLLOCK)
+        MAP_NAMED_KEY(SHIFT, LSHIFT)
+        MAP_NAMED_KEY(META, LGUI)
+        MAP_NAMED_KEY(SUPER, LGUI)
+        MAP_NAMED_KEY(ENTER, RETURN)
+        MAP_NAMED_KEY(TAB, TAB)
+        MAP_NAMED_KEY(ARROW_DOWN, DOWN)
+        MAP_NAMED_KEY(ARROW_LEFT, LEFT)
+        MAP_NAMED_KEY(ARROW_RIGHT, RIGHT)
+        MAP_NAMED_KEY(ARROW_UP, UP)
+        MAP_NAMED_KEY(END, END)
+        MAP_NAMED_KEY(HOME, HOME)
+        MAP_NAMED_KEY(PAGE_DOWN, PAGEDOWN)
+        MAP_NAMED_KEY(PAGE_UP, PAGEUP)
+        MAP_NAMED_KEY(BACKSPACE, BACKSPACE)
+        MAP_NAMED_KEY(CLEAR, CLEAR)
+        MAP_NAMED_KEY(COPY, COPY)
+        MAP_NAMED_KEY(CR_SEL, CRSEL)
+        MAP_NAMED_KEY(CUT, CUT)
+        MAP_NAMED_KEY(DELETE, DELETE)
+        MAP_NAMED_KEY(INSERT, INSERT)
+        MAP_NAMED_KEY(PASTE, PASTE)
+        MAP_NAMED_KEY(REDO, AGAIN)
+        MAP_NAMED_KEY(UNDO, UNDO)
+        MAP_NAMED_KEY(AGAIN, AGAIN)
+        MAP_NAMED_KEY(CANCEL, CANCEL)
+        MAP_NAMED_KEY(CONTEXT_MENU, APPLICATION)
+        MAP_NAMED_KEY(ESCAPE, ESCAPE)
+        MAP_NAMED_KEY(EXECUTE, EXECUTE)
+        MAP_NAMED_KEY(FIND, FIND)
+        MAP_NAMED_KEY(HELP, HELP)
+        MAP_NAMED_KEY(PAUSE, PAUSE)
+        MAP_NAMED_KEY(SELECT, SELECT)
+        MAP_NAMED_KEY(BRIGHTNESS_DOWN, BRIGHTNESSDOWN)
+        MAP_NAMED_KEY(BRIGHTNESS_UP, BRIGHTNESSUP)
+        MAP_NAMED_KEY(EJECT, EJECT)
+        MAP_NAMED_KEY(POWER, POWER)
+        MAP_NAMED_KEY(PRINT_SCREEN, PRINTSCREEN)
+        MAP_NAMED_KEY(BROWSER_BACK, AC_BACK)
+        MAP_NAMED_KEY(BROWSER_FAVORITES, AC_BOOKMARKS)
+        MAP_NAMED_KEY(BROWSER_FORWARD, AC_FORWARD)
+        MAP_NAMED_KEY(BROWSER_HOME, AC_HOME)
+        MAP_NAMED_KEY(BROWSER_REFRESH, AC_REFRESH)
+        MAP_NAMED_KEY(BROWSER_SEARCH, AC_SEARCH)
+        MAP_NAMED_KEY(BROWSER_STOP, AC_STOP)
+        MAP_NAMED_KEY(LAUNCH_MAIL, MAIL)
+        MAP_NAMED_KEY(MEDIA_PLAY_PAUSE, AUDIOPLAY)
+        MAP_NAMED_KEY(MEDIA_PLAY, AUDIOPLAY)
+        MAP_NAMED_KEY(MEDIA_PAUSE, AUDIOPLAY)
+        MAP_NAMED_KEY(MEDIA_STOP, AUDIOSTOP)
+        MAP_NAMED_KEY(MEDIA_TRACK_NEXT, AUDIONEXT)
+        MAP_NAMED_KEY(MEDIA_TRACK_PREVIOUS, AUDIOPREV)
+        MAP_NAMED_KEY(MEDIA_FAST_FORWARD, AUDIOFASTFORWARD)
+        MAP_NAMED_KEY(MEDIA_REWIND, AUDIOREWIND)
+        MAP_NAMED_KEY(AUDIO_VOLUME_DOWN, VOLUMEDOWN)
+        MAP_NAMED_KEY(AUDIO_VOLUME_MUTE, AUDIOMUTE)
+        MAP_NAMED_KEY(AUDIO_VOLUME_UP, VOLUMEUP)
+        MAP_NAMED_KEY(LAUNCH_APPLICATION_1, APP1)
+        MAP_NAMED_KEY(LAUNCH_APPLICATION_2, APP2)
+        MAP_NAMED_KEY(LAUNCH_WEB_BROWSER, WWW)
+        MAP_NAMED_KEY(LAUNCH_MEDIA_PLAYER, MEDIASELECT)
+        MAP_NAMED_KEY(F1, F1)
+        MAP_NAMED_KEY(F2, F2)
+        MAP_NAMED_KEY(F3, F3)
+        MAP_NAMED_KEY(F4, F4)
+        MAP_NAMED_KEY(F5, F5)
+        MAP_NAMED_KEY(F6, F6)
+        MAP_NAMED_KEY(F7, F7)
+        MAP_NAMED_KEY(F8, F8)
+        MAP_NAMED_KEY(F9, F9)
+        MAP_NAMED_KEY(F10, F10)
+        MAP_NAMED_KEY(F11, F11)
+        MAP_NAMED_KEY(F12, F12)
+        MAP_NAMED_KEY(F13, F13)
+        MAP_NAMED_KEY(F14, F14)
+        MAP_NAMED_KEY(F15, F15)
+        MAP_NAMED_KEY(F16, F16)
+        MAP_NAMED_KEY(F17, F17)
+        MAP_NAMED_KEY(F18, F18)
+        MAP_NAMED_KEY(F19, F19)
+        MAP_NAMED_KEY(F20, F20)
+        MAP_NAMED_KEY(F21, F21)
+        MAP_NAMED_KEY(F22, F22)
+        MAP_NAMED_KEY(F23, F23)
+        MAP_NAMED_KEY(F24, F24)
+        default: return SDLK_UNKNOWN;
+    }
+}
 
 static SDL_Scancode PhysicalKeyToScancode(webrogue_physical_key key)
 {
@@ -297,9 +396,10 @@ void WEBROGUE_PumpEvents(_THIS)
         } break;
         case WEBROGUE_EVENT_TYPE_KEY:
         {
-            SDL_SendKeyboardKey(
+            SDL_SendKeyboardKeyAndKeycode(
                 event.inner.key.down ? SDL_PRESSED : SDL_RELEASED,
-                PhysicalKeyToScancode(event.inner.key.physical_key)
+                PhysicalKeyToScancode(event.inner.key.physical_key),
+                NamedKeyToKeycode(event.inner.key.named_key)
             );
             if(event.inner.key.text) {
                 SDL_SendKeyboardText(event.inner.key.text);
