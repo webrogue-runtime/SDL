@@ -29,10 +29,15 @@
 #include "SDL_webroguevulkan.h"
 #include "SDL_syswm.h"
 
-PFN_vkVoidFunction vk_icdGetInstanceProcAddr(
+static PFN_vkVoidFunction static_vkGetInstanceProcAddr(
     VkInstance                                  instance,
     const char*                                 pName
-);
+) __attribute__ ((weakref, alias ("vkGetInstanceProcAddr")));
+
+static PFN_vkVoidFunction static_vk_icdGetInstanceProcAddr(
+    VkInstance                                  instance,
+    const char*                                 pName
+) __attribute__ ((weakref, alias ("vk_icdGetInstanceProcAddr")));
 
 int Webrogue_Vulkan_LoadLibrary(_THIS, const char *path)
 {
@@ -40,9 +45,16 @@ int Webrogue_Vulkan_LoadLibrary(_THIS, const char *path)
     Uint32 i, extensionCount = 0;
     SDL_bool hasSurfaceExtension = SDL_FALSE;
     SDL_bool hasWebrogueSurfaceExtension = SDL_FALSE;
-    PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = vk_icdGetInstanceProcAddr;
 
-    _this->vulkan_config.vkGetInstanceProcAddr = (void *)vkGetInstanceProcAddr;
+    if (static_vk_icdGetInstanceProcAddr) {
+        _this->vulkan_config.vkGetInstanceProcAddr = (void *)static_vk_icdGetInstanceProcAddr;
+    } else if (static_vkGetInstanceProcAddr) {
+        _this->vulkan_config.vkGetInstanceProcAddr = (void *)static_vkGetInstanceProcAddr;
+    } else {
+        SDL_SetError("neither vkGetInstanceProcAddr nor vk_icdGetInstanceProcAddr functions found. You probably forgot -Wl,--export=vkGetInstanceProcAddr or -lvulkan flag. Alternatively you can specify -Wl,--export=vk_icdGetInstanceProcAddr and -lvulkan_gfxstream flags to link Vulkan driver directly.");
+        goto fail;
+    }
+
     _this->vulkan_config.vkEnumerateInstanceExtensionProperties =
         (void *)((PFN_vkGetInstanceProcAddr)_this->vulkan_config.vkGetInstanceProcAddr)(
             VK_NULL_HANDLE, "vkEnumerateInstanceExtensionProperties");
