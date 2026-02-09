@@ -291,6 +291,9 @@ static int WEBROGUE_CreateWindow(_THIS, SDL_Window *window)
 
 #ifdef SDL_VIDEO_OPENGL_EGL
     if (window->flags & SDL_WINDOW_OPENGL) {
+        if (!Webrogue_GLES_IsLibraryLoadable()) {
+            return SDL_SetError("Could not get eglGetProcAddress entrypoint. You probably forgot -Wl,--export=eglGetProcAddress or -lEGL link flag.");
+        }
         if (!_this->egl_data) {
             if (SDL_GL_LoadLibrary(NULL) < 0) {
                 return -1;
@@ -317,13 +320,12 @@ static int WEBROGUE_CreateWindow(_THIS, SDL_Window *window)
 
 static void WEBROGUE_DestroyWindow(_THIS, SDL_Window *window)
 {
-    // TODO
-    // WR_NOT_IMPLEMENTED;
-    return;
-    // if (!window) {
-    //     return;
-    // }
-    // SDL_free(window->driverdata);
+    if (!window) {
+        return;
+    }
+    SDL_WindowData *window_data = window->driverdata;
+    webroguegfx_destroy_window(window_data->wr_window);
+    SDL_free(window->driverdata);
 }
 
 void WEBROGUE_GetWindowSizeInPixels(_THIS, SDL_Window * window, int *w, int *h) {
