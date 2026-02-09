@@ -39,6 +39,7 @@ typedef struct SDL_WindowData
 #ifdef SDL_VIDEO_OPENGL_EGL
    EGLSurface egl_surface;
 #endif
+   SDL_Surface *surface;
 } SDL_WindowData;
 
 #endif /* SDL_webroguevideo_h_ */

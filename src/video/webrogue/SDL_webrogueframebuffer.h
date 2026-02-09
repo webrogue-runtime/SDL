@@ -18,16 +18,10 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-
-#ifndef SDL_webrogueframebuffer_c_h_
-#define SDL_webrogueframebuffer_c_h_
-
 #include "../../SDL_internal.h"
 
-int SDL_WEBROGUE_CreateWindowFramebuffer(_THIS, SDL_Window *window, Uint32 *format, void **pixels, int *pitch);
-int SDL_WEBROGUE_UpdateWindowFramebuffer(_THIS, SDL_Window *window, const SDL_Rect *rects, int numrects);
-void SDL_WEBROGUE_DestroyWindowFramebuffer(_THIS, SDL_Window *window);
+extern int SDL_Webrogue_CreateWindowFramebuffer(_THIS, SDL_Window *window, Uint32 *format, void **pixels, int *pitch);
+extern int SDL_Webrogue_UpdateWindowFramebuffer(_THIS, SDL_Window *window, const SDL_Rect *rects, int numrects);
+extern void SDL_Webrogue_DestroyWindowFramebuffer(_THIS, SDL_Window *window);
 
-#endif /* SDL_webrogueframebuffer_c_h_ */
-
-/* vi: set sts=4 ts=4 sw=4 expandtab: */
+/* vi: set ts=4 sw=4 expandtab: */

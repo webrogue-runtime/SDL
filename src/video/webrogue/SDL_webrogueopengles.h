@@ -38,6 +38,7 @@ typedef struct SDL_PrivateGLESData
 
 /* OpenGLES functions */
 
+extern int Webrogue_GLES_IsLibraryLoadable(void);
 extern int Webrogue_GLES_LoadLibrary(_THIS, const char *path);
 #define Webrogue_GLES_GetProcAddress SDL_EGL_GetProcAddress
 #define Webrogue_GLES_SetSwapInterval SDL_EGL_SetSwapInterval

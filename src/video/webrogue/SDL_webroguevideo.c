@@ -27,11 +27,10 @@
 
 #include "../SDL_sysvideo.h"
 #include "SDL_webrogueevents_c.h"
-#include "SDL_webrogueframebuffer_c.h"
+#include "SDL_webrogueframebuffer.h"
 #include "SDL_webrogueopengles.h"
 #include "SDL_webroguevulkan.h"
 #include "SDL_webrogueswkb.h"
-// #include "SDL_n3dstouch.h"
 #include "SDL_webroguevideo.h"
 
 #define WEBROGUEVID_DRIVER_NAME "webrogue"
@@ -114,20 +113,22 @@ static SDL_VideoDevice *WEBROGUE_CreateDevice(void)
 
     device->PumpEvents = WEBROGUE_PumpEvents;
 
-    device->CreateWindowFramebuffer = SDL_WEBROGUE_CreateWindowFramebuffer;
-    device->UpdateWindowFramebuffer = SDL_WEBROGUE_UpdateWindowFramebuffer;
-    device->DestroyWindowFramebuffer = SDL_WEBROGUE_DestroyWindowFramebuffer;
+    device->CreateWindowFramebuffer = SDL_Webrogue_CreateWindowFramebuffer;
+    device->UpdateWindowFramebuffer = SDL_Webrogue_UpdateWindowFramebuffer;
+    device->DestroyWindowFramebuffer = SDL_Webrogue_DestroyWindowFramebuffer;
 
 #ifdef SDL_VIDEO_OPENGL_EGL
-    device->GL_LoadLibrary = Webrogue_GLES_LoadLibrary;
-    device->GL_GetProcAddress = Webrogue_GLES_GetProcAddress;
-    device->GL_UnloadLibrary = Webrogue_GLES_UnloadLibrary;
-    device->GL_CreateContext = Webrogue_GLES_CreateContext;
-    device->GL_MakeCurrent = Webrogue_GLES_MakeCurrent;
-    device->GL_SetSwapInterval = Webrogue_GLES_SetSwapInterval;
-    device->GL_GetSwapInterval = Webrogue_GLES_GetSwapInterval;
-    device->GL_SwapWindow = Webrogue_GLES_SwapWindow;
-    device->GL_DeleteContext = Webrogue_GLES_DeleteContext;
+    if (Webrogue_GLES_IsLibraryLoadable()) {
+        device->GL_LoadLibrary = Webrogue_GLES_LoadLibrary;
+        device->GL_GetProcAddress = Webrogue_GLES_GetProcAddress;
+        device->GL_UnloadLibrary = Webrogue_GLES_UnloadLibrary;
+        device->GL_CreateContext = Webrogue_GLES_CreateContext;
+        device->GL_MakeCurrent = Webrogue_GLES_MakeCurrent;
+        device->GL_SetSwapInterval = Webrogue_GLES_SetSwapInterval;
+        device->GL_GetSwapInterval = Webrogue_GLES_GetSwapInterval;
+        device->GL_SwapWindow = Webrogue_GLES_SwapWindow;
+        device->GL_DeleteContext = Webrogue_GLES_DeleteContext;
+    }
 #endif
 
 #ifdef SDL_VIDEO_VULKAN

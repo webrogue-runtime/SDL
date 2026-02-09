@@ -32,16 +32,30 @@
 
 // /* EGL implementation of SDL OpenGL support */
 
-#define LOAD_FUNC(NAME) _this->egl_data->NAME = NAME;
+static void * static_eglGetProcAddress(const char *procname) __attribute__((weakref, alias("eglGetProcAddress")));
+
+extern int Webrogue_GLES_IsLibraryLoadable(void) {
+    return static_eglGetProcAddress != NULL;
+}
+
+#define LOAD_FUNC(NAME)                                        \
+    _this->egl_data->NAME = _this->egl_data->eglGetProcAddress (#NAME);   \
+    if (!_this->egl_data->NAME) {                              \
+        return SDL_SetError("Could not get a EGL entrypoint"); \
+    }
 
 int Webrogue_GLES_LoadLibrary(_THIS, const char *path)
 {
-    _this->egl_data = (struct SDL_EGL_VideoData *) SDL_calloc(1, sizeof(SDL_EGL_VideoData));
+    if(!Webrogue_GLES_IsLibraryLoadable()) {
+        return SDL_SetError("Could not get eglGetProcAddress entrypoint. You probably forgot -Wl,--export=eglGetProcAddress or -lEGL link flag.");
+    }
+
+    _this->egl_data = (struct SDL_EGL_VideoData *)SDL_calloc(1, sizeof(SDL_EGL_VideoData));
     if (!_this->egl_data) {
         return SDL_OutOfMemory();
     }
 
-    _this->egl_data->eglGetProcAddress = (void *(EGLAPIENTRY *)(const char *)) eglGetProcAddress;
+    _this->egl_data->eglGetProcAddress = (void *(EGLAPIENTRY *)(const char *))static_eglGetProcAddress;
 
     LOAD_FUNC(eglGetDisplay);
     LOAD_FUNC(eglInitialize);
@@ -85,4 +99,4 @@ SDL_EGL_CreateContext_impl(Webrogue)
         SDL_EGL_MakeCurrent_impl(Webrogue)
 #endif /* SDL_VIDEO_DRIVER_WEBROGUE */
 
-/* vi: set ts=4 sw=4 expandtab: */
+    /* vi: set ts=4 sw=4 expandtab: */
