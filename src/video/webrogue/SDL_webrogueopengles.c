@@ -35,7 +35,7 @@
 static void * static_eglGetProcAddress(const char *procname) __attribute__((weakref, alias("eglGetProcAddress")));
 
 extern int Webrogue_GLES_IsLibraryLoadable(void) {
-    return static_eglGetProcAddress != NULL;
+    return static_eglGetProcAddress != NULL && webroguegfx_vulkan_check();
 }
 
 #define LOAD_FUNC(NAME)                                        \
@@ -46,7 +46,10 @@ extern int Webrogue_GLES_IsLibraryLoadable(void) {
 
 int Webrogue_GLES_LoadLibrary(_THIS, const char *path)
 {
-    if(!Webrogue_GLES_IsLibraryLoadable()) {
+    if(!webroguegfx_vulkan_check()) {
+        return SDL_SetError("WebrogueGFX-Vulkan API is unavailable");
+    }
+    if(!static_eglGetProcAddress) {
         return SDL_SetError("Could not get eglGetProcAddress entrypoint. You probably forgot -Wl,--export=eglGetProcAddress or -lEGL link flag.");
     }
 
