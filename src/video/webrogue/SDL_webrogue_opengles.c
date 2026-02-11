@@ -29,23 +29,30 @@
 #include "SDL_webrogue_video.h"
 #include <webroguegfx/webroguegfx.h>
 
-#define LOAD_FUNC(TYPE, NAME) _this->egl_data->NAME = NAME;
-#define LOAD_FUNC_EGLEXT(TYPE, NAME) \
+static void * static_eglGetProcAddress(const char *procname) __attribute__((weakref, alias("eglGetProcAddress")));
+
+#define LOAD_FUNC(TYPE, NAME) \
     _this->egl_data->NAME = (TYPE)_this->egl_data->eglGetProcAddress(#NAME);
 
 bool Webrogue_GLES_LoadLibrary(SDL_VideoDevice *_this, const char *path)
 {
+    if(!webroguegfx_vulkan_check()) {
+        return SDL_SetError("WebrogueGFX-Vulkan API is unavailable");
+    }
+    if(!static_eglGetProcAddress) {
+        return SDL_SetError("Could not get eglGetProcAddress entrypoint. You probably forgot -Wl,--export=eglGetProcAddress or -lEGL link flag.");
+    }
+
     _this->egl_data = (struct SDL_EGL_VideoData *)SDL_calloc(1, sizeof(SDL_EGL_VideoData));
     if (!_this->egl_data) {
         return false;
     }
-    _this->egl_data->eglGetProcAddress = eglGetProcAddress;
+    _this->egl_data->eglGetProcAddress = (PFNEGLGETPROCADDRESSPROC)static_eglGetProcAddress;
     
     // Load new function pointers
     LOAD_FUNC(PFNEGLGETDISPLAYPROC, eglGetDisplay);
     LOAD_FUNC(PFNEGLINITIALIZEPROC, eglInitialize);
     LOAD_FUNC(PFNEGLTERMINATEPROC, eglTerminate);
-    LOAD_FUNC(PFNEGLGETPROCADDRESSPROC, eglGetProcAddress);
     LOAD_FUNC(PFNEGLCHOOSECONFIGPROC, eglChooseConfig);
     LOAD_FUNC(PFNEGLCREATECONTEXTPROC, eglCreateContext);
     LOAD_FUNC(PFNEGLDESTROYCONTEXTPROC, eglDestroyContext);
@@ -61,14 +68,14 @@ bool Webrogue_GLES_LoadLibrary(SDL_VideoDevice *_this, const char *path)
     LOAD_FUNC(PFNEGLWAITGLPROC, eglWaitGL);
     LOAD_FUNC(PFNEGLBINDAPIPROC, eglBindAPI);
     LOAD_FUNC(PFNEGLGETERRORPROC, eglGetError);
-    LOAD_FUNC_EGLEXT(PFNEGLQUERYDEVICESEXTPROC, eglQueryDevicesEXT);
-    LOAD_FUNC_EGLEXT(PFNEGLGETPLATFORMDISPLAYEXTPROC, eglGetPlatformDisplayEXT);
+    LOAD_FUNC(PFNEGLQUERYDEVICESEXTPROC, eglQueryDevicesEXT);
+    LOAD_FUNC(PFNEGLGETPLATFORMDISPLAYEXTPROC, eglGetPlatformDisplayEXT);
     // Atomic functions
-    LOAD_FUNC_EGLEXT(PFNEGLCREATESYNCKHRPROC, eglCreateSyncKHR);
-    LOAD_FUNC_EGLEXT(PFNEGLDESTROYSYNCKHRPROC, eglDestroySyncKHR);
-    LOAD_FUNC_EGLEXT(PFNEGLDUPNATIVEFENCEFDANDROIDPROC, eglDupNativeFenceFDANDROID);
-    LOAD_FUNC_EGLEXT(PFNEGLWAITSYNCKHRPROC, eglWaitSyncKHR);
-    LOAD_FUNC_EGLEXT(PFNEGLCLIENTWAITSYNCKHRPROC, eglClientWaitSyncKHR);
+    LOAD_FUNC(PFNEGLCREATESYNCKHRPROC, eglCreateSyncKHR);
+    LOAD_FUNC(PFNEGLDESTROYSYNCKHRPROC, eglDestroySyncKHR);
+    LOAD_FUNC(PFNEGLDUPNATIVEFENCEFDANDROIDPROC, eglDupNativeFenceFDANDROID);
+    LOAD_FUNC(PFNEGLWAITSYNCKHRPROC, eglWaitSyncKHR);
+    LOAD_FUNC(PFNEGLCLIENTWAITSYNCKHRPROC, eglClientWaitSyncKHR);
     // Atomic functions end
 
     _this->egl_data->egl_display = _this->egl_data->eglGetDisplay(EGL_DEFAULT_DISPLAY);

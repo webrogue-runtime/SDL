@@ -46,6 +46,11 @@ bool Webrogue_Vulkan_LoadLibrary(SDL_VideoDevice *_this, const char *path)
     bool hasSurfaceExtension = false;
     bool hasWebrogueSurfaceExtension = false;
     
+    if(!webroguegfx_vulkan_check()) {
+        SDL_SetError("WebrogueGFX-Vulkan API is unavailable");
+        goto fail;
+    }
+
     if (static_vk_icdGetInstanceProcAddr) {
         _this->vulkan_config.vkGetInstanceProcAddr = (void *)static_vk_icdGetInstanceProcAddr;
     } else if (static_vkGetInstanceProcAddr) {

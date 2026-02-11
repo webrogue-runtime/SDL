@@ -35,6 +35,7 @@ struct SDL_VideoData
 struct SDL_WindowData
 {
    wr_window wr_window;
+   SDL_Surface *framebuffer;
    
 #ifdef SDL_VIDEO_OPENGL_EGL
    EGLSurface egl_surface;

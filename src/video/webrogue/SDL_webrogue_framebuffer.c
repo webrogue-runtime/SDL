@@ -30,17 +30,49 @@
 
 bool SDL_Webrogue_CreateWindowFramebuffer(SDL_VideoDevice *_this, SDL_Window *window, SDL_PixelFormat *format, void **pixels, int *pitch)
 {
-    WR_NOT_IMPLEMENTED;
+    const SDL_PixelFormat framebuffer_format = SDL_PIXELFORMAT_ARGB8888;
+    int w, h;
+    SDL_WindowData *data = window->internal;
+
+    SDL_Webrogue_DestroyWindowFramebuffer(_this, window);
+
+    SDL_GetWindowSizeInPixels(window, &w, &h);
+    SDL_Surface *framebuffer = SDL_CreateSurface(w, h, framebuffer_format);
+
+    if (!framebuffer) {
+        return false;
+    }
+
+    data->framebuffer = framebuffer;
+    *format = framebuffer_format;
+    *pixels = framebuffer->pixels;
+    *pitch = framebuffer->pitch;
+    return true;
 }
 
 bool SDL_Webrogue_UpdateWindowFramebuffer(SDL_VideoDevice *_this, SDL_Window *window, const SDL_Rect *rects, int numrects)
 {
-    WR_NOT_IMPLEMENTED;
+    SDL_WindowData *data = window->internal;
+    SDL_Surface *framebuffer = data->framebuffer;
+    if (!framebuffer) {
+        return SDL_SetError("%s: Unable to get the window surface.", __func__);
+    }
+    int w = framebuffer->w;
+    int h = framebuffer->h;
+
+    webroguegfx_present_pixels(data->wr_window, framebuffer->pixels, 4 * w * h);
+
+    return true;
 }
 
 void SDL_Webrogue_DestroyWindowFramebuffer(SDL_VideoDevice *_this, SDL_Window *window)
 {
-    WR_NOT_IMPLEMENTED;
+    SDL_WindowData *data = window->internal;
+
+    if(data->framebuffer) {
+        SDL_DestroySurface(data->framebuffer);
+        data->framebuffer = NULL;
+    }
 }
 
 #endif // SDL_VIDEO_DRIVER_WEBROGUE
