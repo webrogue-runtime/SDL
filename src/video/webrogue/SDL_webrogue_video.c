@@ -282,7 +282,7 @@ static void WEBROGUE_DestroyWindow(SDL_VideoDevice *_this, SDL_Window *window)
 
 static void WEBROGUE_GetWindowSizeInPixels(SDL_VideoDevice *_this, SDL_Window *window, int *w, int *h)
 {
-    SDL_WindowData *window_data = (SDL_VideoData *)window->internal;
+    SDL_WindowData *window_data = (SDL_WindowData *)window->internal;
     int width, height;
     webroguegfx_gl_size(window_data->wr_window, &width, &height);
     *w = width;
