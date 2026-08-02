@@ -2,7 +2,7 @@
 #define VULKAN_WEBROGUE_H_ 1
 
 /*
-** Copyright 2015-2025 The Khronos Group Inc.
+** Copyright 2015-2026 The Khronos Group Inc.
 **
 ** SPDX-License-Identifier: Apache-2.0
 */
@@ -28,7 +28,7 @@ typedef struct VkSurfaceCreateInfoWEBROGUE {
     VkStructureType                 sType;
     const void*                     pNext;
     VkSurfaceCreateFlagsWEBROGUE    flags;
-    void*                           window;
+    uint32_t                        webrogue_window_id;
 } VkSurfaceCreateInfoWEBROGUE;
 
 typedef VkResult (VKAPI_PTR *PFN_vkCreateSurfaceWEBROGUE)(VkInstance instance, const VkSurfaceCreateInfoWEBROGUE* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface);

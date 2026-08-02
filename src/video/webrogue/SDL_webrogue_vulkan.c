@@ -56,7 +56,7 @@ bool Webrogue_Vulkan_LoadLibrary(SDL_VideoDevice *_this, const char *path)
     } else if (static_vkGetInstanceProcAddr) {
         _this->vulkan_config.vkGetInstanceProcAddr = (void *)static_vkGetInstanceProcAddr;
     } else {
-        SDL_SetError("neither vkGetInstanceProcAddr nor vk_icdGetInstanceProcAddr functions found. You probably forgot -Wl,--export=vkGetInstanceProcAddr or -lvulkan flag. Alternatively you can specify -Wl,--export=vk_icdGetInstanceProcAddr and -lvulkan_gfxstream flags to link Vulkan driver directly.");
+        SDL_SetError("neither vkGetInstanceProcAddr nor vk_icdGetInstanceProcAddr functions found. You probably forgot -Wl,--export=vkGetInstanceProcAddr or -lvulkan flag. Alternatively you can specify -Wl,--export=vk_icdGetInstanceProcAddr and -lvulkan_virtio flags to link Vulkan driver directly.");
         goto fail;
     }
 
@@ -135,7 +135,7 @@ bool Webrogue_Vulkan_CreateSurface(SDL_VideoDevice *_this,
     createInfo.sType = VK_STRUCTURE_TYPE_SURFACE_CREATE_INFO_WEBROGUE;
     createInfo.pNext = NULL;
     createInfo.flags = 0;
-    createInfo.window = windowData->wr_window;
+    createInfo.webrogue_window_id = webroguegfx_get_vulkan_window_id(windowData->wr_window);
     result = vkCreateSurfaceWEBROGUE(instance, &createInfo, allocator, surface);
     if (result != VK_SUCCESS) {
         return SDL_SetError("vkCreateSurfaceWEBROGUE failed: %s", SDL_Vulkan_GetResultString(result));
