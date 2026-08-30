@@ -21,15 +21,20 @@
 
 #include "../SDL_sysurl.h"
 
+#include <unistd.h>
+#ifndef __wasi__
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/wait.h>
 #include <errno.h>
+#endif /* __wasi__ */
 
 int SDL_SYS_OpenURL(const char *url)
 {
+#ifdef __wasi__
+    return SDL_SetError("URL handling is currently not implemented for Webrogue");
+#else
     const pid_t pid1 = fork();
     if (pid1 == 0) { /* child process */
 #ifdef USE_POSIX_SPAWN
@@ -77,6 +82,7 @@ int SDL_SYS_OpenURL(const char *url)
             return SDL_SetError("Waiting on xdg-open failed: %s", strerror(errno));
         }
     }
+#endif /* __wasi__ */
 }
 
 /* vi: set ts=4 sw=4 expandtab: */
