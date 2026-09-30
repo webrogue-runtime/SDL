@@ -23,7 +23,7 @@
 #ifdef SDL_VIDEO_DRIVER_WEBROGUE
 
 #include "SDL_webrogue_unimplemented.h"
-#include <webroguegfx/webroguegfx.h>
+#include <libwr4c/wr4c.h>
 
 #include "../SDL_sysvideo.h"
 #include "SDL_webrogueevents_c.h"
@@ -265,7 +265,7 @@ static int WEBROGUE_GetDisplayBounds(_THIS, SDL_VideoDisplay *display, SDL_Rect 
         return -1;
     }
     // int width, height;
-    // webroguegfx_window_size(&width, &height);
+    // wr4c_window_size(&width, &height);
     // FIXME use real data
     rect->x = 0;
     rect->y = 0;
@@ -285,7 +285,7 @@ static int WEBROGUE_CreateWindow(_THIS, SDL_Window *window)
     if (!window_data) {
         return SDL_OutOfMemory();
     }
-    webroguegfx_make_window(&window_data->wr_window);
+    wr4c_make_window(&window_data->wr_window);
     display_data = (DisplayDriverData *)SDL_GetDisplayDriverData(window->display_index);
     window->driverdata = window_data;
 
@@ -310,7 +310,7 @@ static int WEBROGUE_CreateWindow(_THIS, SDL_Window *window)
     driverdata->latest_window = window;
 
     int width, height;
-    webroguegfx_window_size(window_data->wr_window, &width, &height);
+    wr4c_window_size(window_data->wr_window, &width, &height);
     window->w = width;
     window->h = height;
 
@@ -324,14 +324,14 @@ static void WEBROGUE_DestroyWindow(_THIS, SDL_Window *window)
         return;
     }
     SDL_WindowData *window_data = window->driverdata;
-    webroguegfx_destroy_window(window_data->wr_window);
+    wr4c_destroy_window(window_data->wr_window);
     SDL_free(window->driverdata);
 }
 
 void WEBROGUE_GetWindowSizeInPixels(_THIS, SDL_Window * window, int *w, int *h) {
     int width, height;
     SDL_WindowData *window_data = (SDL_WindowData *) window->driverdata;
-    webroguegfx_gl_size(window_data->wr_window, &width, &height);
+    wr4c_gl_size(window_data->wr_window, &width, &height);
     *w = width;
     *h = height;
 }

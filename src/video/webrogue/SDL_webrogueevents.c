@@ -27,12 +27,12 @@
 #include "../../events/SDL_events_c.h"
 #include "SDL_webrogueevents_c.h"
 #include "SDL_webroguevideo.h"
-#include <webroguegfx/webroguegfx.h>
+#include <libwr4c/wr4c.h>
 
-#define MAP_KEY(wr_key, sdl_key) case WEBROGUE_PHYSICAL_KEY_ ## wr_key: return SDL_SCANCODE_ ## sdl_key;
-#define MAP_NAMED_KEY(wr_key, sdl_key) case WEBROGUE_NAMED_KEY_ ## wr_key: return SDLK_ ## sdl_key;
+#define MAP_KEY(wr_key, sdl_key) case WR4C_PHYSICAL_KEY_ ## wr_key: return SDL_SCANCODE_ ## sdl_key;
+#define MAP_NAMED_KEY(wr_key, sdl_key) case WR4C_NAMED_KEY_ ## wr_key: return SDLK_ ## sdl_key;
 
-static SDL_Keycode NamedKeyToKeycode(webrogue_named_key key)
+static SDL_Keycode NamedKeyToKeycode(wr4c_named_key_t key)
 {
     switch (key) {
         MAP_NAMED_KEY(UNKNOWN, UNKNOWN)
@@ -129,7 +129,7 @@ static SDL_Keycode NamedKeyToKeycode(webrogue_named_key key)
     }
 }
 
-static SDL_Scancode PhysicalKeyToScancode(webrogue_physical_key key)
+static SDL_Scancode PhysicalKeyToScancode(wr4c_physical_key_t key)
 {
     switch (key) {
         MAP_KEY(UNKNOWN, UNKNOWN)
@@ -353,21 +353,21 @@ static SDL_Scancode PhysicalKeyToScancode(webrogue_physical_key key)
 void WEBROGUE_PumpEvents(_THIS)
 {
     SDL_VideoData *data = (SDL_VideoData *)_this->driverdata;
-    webrogue_event event;
+    wr4c_event_t event;
     while (1) {
-        event = webroguegfx_poll();
-        switch (event.type) {
-        case WEBROGUE_EVENT_TYPE_MOUSE_BUTTON:
+        event = wr4c_poll();
+        switch (event.tag) {
+        case WR4C_EVENT_TAG_MOUSE_BUTTON:
         {
             Uint8 button = 0;
             switch (event.inner.mouse_button.button) {
-                case WEBROGUE_MOUSE_BUTTON_LEFT:
+                case WR4C_MOUSE_BUTTON_LEFT:
                     button = SDL_BUTTON_LEFT;
                     break;
-                case WEBROGUE_MOUSE_BUTTON_RIGHT:
+                case WR4C_MOUSE_BUTTON_RIGHT:
                     button = SDL_BUTTON_RIGHT;
                     break;
-                case WEBROGUE_MOUSE_BUTTON_MIDDLE:
+                case WR4C_MOUSE_BUTTON_MIDDLE:
                     button = SDL_BUTTON_MIDDLE;
                     break;
             }
@@ -380,7 +380,7 @@ void WEBROGUE_PumpEvents(_THIS)
                 );
             }
         } break;
-        case WEBROGUE_EVENT_TYPE_MOUSE_MOTION:
+        case WR4C_EVENT_TAG_MOUSE_MOTION:
         {
             SDL_SendMouseMotion(
                 data->latest_window,
@@ -390,27 +390,28 @@ void WEBROGUE_PumpEvents(_THIS)
                 event.inner.mouse_motion.y
             );
         } break;
-        case WEBROGUE_EVENT_TYPE_KEY:
+        case WR4C_EVENT_TAG_KEY:
         {
             SDL_SendKeyboardKeyAndKeycode(
                 event.inner.key.down ? SDL_PRESSED : SDL_RELEASED,
                 PhysicalKeyToScancode(event.inner.key.physical_key),
                 NamedKeyToKeycode(event.inner.key.named_key)
             );
-            if(event.inner.key.text) {
+            if(event.inner.key.text_len) {
                 SDL_SendKeyboardText(event.inner.key.text);
             }
         } break;
-        case WEBROGUE_EVENT_TYPE_QUIT:
+        case WR4C_EVENT_TAG_QUIT:
         {
             SDL_Event ev;
             ev.type = SDL_QUIT;
             SDL_PushEvent(&ev);
         } break;
-        case WEBROGUE_EVENT_TYPE_WINDOW_RESIZED:
+        case WR4C_EVENT_TAG_GL_RESIZED:
+        case WR4C_EVENT_TAG_WINDOW_RESIZED:
         {
             int width, height;
-            webroguegfx_window_size(
+            wr4c_window_size(
                 ((SDL_WindowData*)data->latest_window->driverdata)->wr_window,
                 &width,
                 &height
@@ -422,7 +423,7 @@ void WEBROGUE_PumpEvents(_THIS)
                 height
             );
         } break;
-        // case WEBROGUE_EVENT_TYPE_GL_RESIZED:
+        // case WR4C_EVENT_TAG_GL_RESIZED:
         // {
         //     int width, height;
         //     webroguegfx_gl_size(
@@ -437,7 +438,7 @@ void WEBROGUE_PumpEvents(_THIS)
         //         height
         //     );
         // } break;
-        case WEBROGUE_EVENT_TYPE_INVALID:
+        case WR4C_EVENT_TAG_INVALID:
         {
             return;
         }

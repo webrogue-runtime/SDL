@@ -23,7 +23,7 @@
 #if defined(SDL_VIDEO_DRIVER_WEBROGUE) && defined(SDL_VIDEO_OPENGL_EGL)
 
 #include "SDL_webrogue_unimplemented.h"
-#include <webroguegfx/webroguegfx.h>
+#include <libwr4c/wr4c.h>
 
 #include "SDL_hints.h"
 // #include "SDL_x11video.h"
@@ -35,7 +35,7 @@
 static void * static_eglGetProcAddress(const char *procname) __attribute__((weakref, alias("eglGetProcAddress")));
 
 extern int Webrogue_GLES_IsLibraryLoadable(void) {
-    return static_eglGetProcAddress != NULL && webroguegfx_vulkan_check();
+    return static_eglGetProcAddress != NULL && wr4c_vulkan_check();
 }
 
 #define LOAD_FUNC(NAME)                                        \
@@ -46,7 +46,7 @@ extern int Webrogue_GLES_IsLibraryLoadable(void) {
 
 int Webrogue_GLES_LoadLibrary(_THIS, const char *path)
 {
-    if(!webroguegfx_vulkan_check()) {
+    if(!wr4c_vulkan_check()) {
         return SDL_SetError("WebrogueGFX-Vulkan API is unavailable");
     }
     if(!static_eglGetProcAddress) {

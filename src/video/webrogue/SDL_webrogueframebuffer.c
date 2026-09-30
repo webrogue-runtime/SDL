@@ -27,7 +27,7 @@
 #include "../SDL_sysvideo.h"
 #include "SDL_webrogueframebuffer.h"
 #include "SDL_webroguevideo.h"
-#include <webroguegfx/webroguegfx.h>
+#include <libwr4c/wr4c.h>
 
 int SDL_Webrogue_CreateWindowFramebuffer(_THIS, SDL_Window *window, Uint32 *format, void **pixels, int *pitch)
 {
@@ -62,7 +62,7 @@ int SDL_Webrogue_UpdateWindowFramebuffer(_THIS, SDL_Window *window, const SDL_Re
     if (!surface) {
         return SDL_SetError("%s: Unable to get the window surface.", __func__);
     }
-    webroguegfx_present_pixels(data->wr_window, surface->pixels, 4 * w * h);
+    wr4c_present_pixels(data->wr_window, surface->pixels, 4 * w * h);
 
     return 0;
 }
