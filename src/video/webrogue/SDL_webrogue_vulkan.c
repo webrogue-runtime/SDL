@@ -46,7 +46,7 @@ bool Webrogue_Vulkan_LoadLibrary(SDL_VideoDevice *_this, const char *path)
     bool hasSurfaceExtension = false;
     bool hasWebrogueSurfaceExtension = false;
     
-    if(!webroguegfx_vulkan_check()) {
+    if(!wr4c_vulkan_check()) {
         SDL_SetError("WebrogueGFX-Vulkan API is unavailable");
         goto fail;
     }
@@ -135,7 +135,7 @@ bool Webrogue_Vulkan_CreateSurface(SDL_VideoDevice *_this,
     createInfo.sType = VK_STRUCTURE_TYPE_SURFACE_CREATE_INFO_WEBROGUE;
     createInfo.pNext = NULL;
     createInfo.flags = 0;
-    createInfo.webrogue_window_id = webroguegfx_get_vulkan_window_id(windowData->wr_window);
+    createInfo.webrogue_window_id = wr4c_get_vulkan_window_id(windowData->wr_window);
     result = vkCreateSurfaceWEBROGUE(instance, &createInfo, allocator, surface);
     if (result != VK_SUCCESS) {
         return SDL_SetError("vkCreateSurfaceWEBROGUE failed: %s", SDL_Vulkan_GetResultString(result));

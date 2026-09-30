@@ -31,7 +31,7 @@
 #include "SDL_webrogue_unimplemented.h"
 #include "SDL_webrogue_video.h"
 #include "SDL_webrogue_vulkan.h"
-#include <webroguegfx/webroguegfx.h>
+#include <libwr4c/wr4c.h>
 
 #define WEBROGUEVID_DRIVER_NAME "webrogue"
 
@@ -161,7 +161,7 @@ static bool AddWEBROGUEDisplay()
     }
 
     // int width, height;
-    // webroguegfx_window_size(&width, &height);
+    // wr4c_window_size(&width, &height);
     mode.w = 100;
     mode.h = 100;
     mode.refresh_rate = 60.0f;
@@ -195,7 +195,7 @@ static bool WEBROGUE_GetDisplayModes(SDL_VideoDevice *_this, SDL_VideoDisplay *d
     SDL_zero(mode);
 
     // int width, height;
-    // webroguegfx_window_size(&width, &height);
+    // wr4c_window_size(&width, &height);
     mode.w = 100;
     mode.h = 100;
     mode.refresh_rate = 60.0f;
@@ -227,7 +227,7 @@ static bool WEBROGUE_GetDisplayBounds(SDL_VideoDevice *_this, SDL_VideoDisplay *
     }
 
     // int width, height;
-    // webroguegfx_window_size(&width, &height);
+    // wr4c_window_size(&width, &height);
     rect->x = 0;
     rect->y = 0;
     rect->w = 100;
@@ -243,9 +243,9 @@ static bool WEBROGUE_CreateWindow(SDL_VideoDevice *_this, SDL_Window *window, SD
     if (!window_data) {
         return false;
     }
-    webroguegfx_make_window(&window_data->wr_window);
+    wr4c_make_window(&window_data->wr_window);
     int width, height;
-    webroguegfx_window_size(window_data->wr_window, &width, &height);
+    wr4c_window_size(window_data->wr_window, &width, &height);
     window->w = width;
     window->h = height;
     display_data = SDL_GetDisplayDriverDataForWindow(window);
@@ -284,7 +284,7 @@ static void WEBROGUE_GetWindowSizeInPixels(SDL_VideoDevice *_this, SDL_Window *w
 {
     SDL_WindowData *window_data = (SDL_WindowData *)window->internal;
     int width, height;
-    webroguegfx_gl_size(window_data->wr_window, &width, &height);
+    wr4c_gl_size(window_data->wr_window, &width, &height);
     *w = width;
     *h = height;
 }

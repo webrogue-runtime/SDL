@@ -2955,8 +2955,8 @@ elseif(WASI)
     set(SDL_VIDEO_RENDER_VULKAN ${SDL_VULKAN})
   endif()
 
-  if(TARGET webroguegfx)
-    list(APPEND SDL_CMAKE_DEPENDS webroguegfx)
+  if(TARGET wr4c)
+    list(APPEND SDL_CMAKE_DEPENDS wr4c)
   endif()
 endif()
 
@@ -3614,7 +3614,7 @@ if(SDL_SHARED)
   export(TARGETS SDL3-shared NAMESPACE "SDL3::" FILE "SDL3sharedTargets.cmake")
 endif()
 
-if(SDL_STATIC AND NOT TARGET webroguegfx)
+if(SDL_STATIC AND NOT TARGET wr4c)
   export(TARGETS SDL3-static NAMESPACE "SDL3::" FILE "SDL3staticTargets.cmake")
 endif()
 

@@ -25,7 +25,7 @@
 
 #include "../SDL_sysvideo.h"
 #include "../SDL_egl_c.h"
-#include <webroguegfx/webroguegfx.h>
+#include <libwr4c/wr4c.h>
 
 struct SDL_VideoData
 {
@@ -34,7 +34,7 @@ struct SDL_VideoData
 
 struct SDL_WindowData
 {
-   wr_window wr_window;
+   wr4c_window_t wr_window;
    SDL_Surface *framebuffer;
    
 #ifdef SDL_VIDEO_OPENGL_EGL

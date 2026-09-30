@@ -60,7 +60,7 @@ bool SDL_Webrogue_UpdateWindowFramebuffer(SDL_VideoDevice *_this, SDL_Window *wi
     int w = framebuffer->w;
     int h = framebuffer->h;
 
-    webroguegfx_present_pixels(data->wr_window, framebuffer->pixels, 4 * w * h);
+    wr4c_present_pixels(data->wr_window, framebuffer->pixels, 4 * w * h);
 
     return true;
 }

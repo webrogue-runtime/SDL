@@ -27,7 +27,7 @@
 #include "SDL_webrogue_opengles.h"
 #include "SDL_webrogue_unimplemented.h"
 #include "SDL_webrogue_video.h"
-#include <webroguegfx/webroguegfx.h>
+#include <libwr4c/wr4c.h>
 
 static void * static_eglGetProcAddress(const char *procname) __attribute__((weakref, alias("eglGetProcAddress")));
 
@@ -36,7 +36,7 @@ static void * static_eglGetProcAddress(const char *procname) __attribute__((weak
 
 bool Webrogue_GLES_LoadLibrary(SDL_VideoDevice *_this, const char *path)
 {
-    if(!webroguegfx_vulkan_check()) {
+    if(!wr4c_vulkan_check()) {
         return SDL_SetError("WebrogueGFX-Vulkan API is unavailable");
     }
     if(!static_eglGetProcAddress) {
