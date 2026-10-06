@@ -64,6 +64,7 @@ int Webrogue_Vulkan_LoadLibrary(_THIS, const char *path)
         (void *)((PFN_vkGetInstanceProcAddr)_this->vulkan_config.vkGetInstanceProcAddr)(
             VK_NULL_HANDLE, "vkEnumerateInstanceExtensionProperties");
     if (!_this->vulkan_config.vkEnumerateInstanceExtensionProperties) {
+        SDL_SetError("vkEnumerateInstanceExtensionProperties not found via vkGetInstanceProcAddr");
         goto fail;
     }
     extensions = SDL_Vulkan_CreateInstanceExtensionsList(
@@ -85,7 +86,7 @@ int Webrogue_Vulkan_LoadLibrary(_THIS, const char *path)
         SDL_SetError("Installed Vulkan doesn't implement the " VK_KHR_SURFACE_EXTENSION_NAME " extension");
         goto fail;
     } else if (!hasWebrogueSurfaceExtension) {
-        SDL_SetError("Installed Vulkan doesn't implement the " VK_WEBROGUE_SURFACE_EXTENSION_NAME "extension");
+        SDL_SetError("Installed Vulkan doesn't implement the " VK_WEBROGUE_SURFACE_EXTENSION_NAME " extension");
         goto fail;
     }
     return 0;
@@ -106,7 +107,7 @@ SDL_bool Webrogue_Vulkan_GetInstanceExtensions(_THIS,
     static const char *const extensionsForWebrogue[] = {
         VK_KHR_SURFACE_EXTENSION_NAME, VK_WEBROGUE_SURFACE_EXTENSION_NAME
     };
-    if (!_this->vulkan_config.loader_handle) {
+    if (!_this->vulkan_config.loader_loaded) {
         SDL_SetError("Vulkan is not loaded");
         return SDL_FALSE;
     }
