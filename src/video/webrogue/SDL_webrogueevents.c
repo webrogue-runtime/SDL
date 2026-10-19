@@ -72,6 +72,7 @@ static void WEBROGUE_RestoreEGLContext(_THIS, SDL_Window *window)
         return;
     }
 
+    SDL_GL_MakeCurrent(window, NULL);
     if (SDL_GL_MakeCurrent(window, (SDL_GLContext)window_data->egl_context) < 0) {
         /* The driver may have lost the context along with the old native surface. */
         window_data->egl_context = (EGLContext)SDL_GL_CreateContext(window);
