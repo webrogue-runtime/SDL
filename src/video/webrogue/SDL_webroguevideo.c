@@ -265,7 +265,7 @@ static int WEBROGUE_GetDisplayBounds(_THIS, SDL_VideoDisplay *display, SDL_Rect 
         return -1;
     }
     // int width, height;
-    // wr4c_window_size(&width, &height);
+    // wr4c_logical_size(&width, &height);
     // FIXME use real data
     rect->x = 0;
     rect->y = 0;
@@ -307,10 +307,8 @@ static int WEBROGUE_CreateWindow(_THIS, SDL_Window *window)
     }
 #endif
 
-    driverdata->latest_window = window;
-
     int width, height;
-    wr4c_window_size(window_data->wr_window, &width, &height);
+    wr4c_logical_size(window_data->wr_window, &width, &height);
     window->w = width;
     window->h = height;
 
@@ -324,6 +322,12 @@ static void WEBROGUE_DestroyWindow(_THIS, SDL_Window *window)
         return;
     }
     SDL_WindowData *window_data = window->driverdata;
+#ifdef SDL_VIDEO_OPENGL_EGL
+    if (window_data->egl_surface != EGL_NO_SURFACE) {
+        SDL_EGL_DestroySurface(_this, window_data->egl_surface);
+        window_data->egl_surface = EGL_NO_SURFACE;
+    }
+#endif
     wr4c_destroy_window(window_data->wr_window);
     SDL_free(window->driverdata);
 }
@@ -331,7 +335,7 @@ static void WEBROGUE_DestroyWindow(_THIS, SDL_Window *window)
 void WEBROGUE_GetWindowSizeInPixels(_THIS, SDL_Window * window, int *w, int *h) {
     int width, height;
     SDL_WindowData *window_data = (SDL_WindowData *) window->driverdata;
-    wr4c_gl_size(window_data->wr_window, &width, &height);
+    wr4c_physical_size(window_data->wr_window, &width, &height);
     *w = width;
     *h = height;
 }

@@ -44,9 +44,9 @@ extern int Webrogue_GLES_LoadLibrary(_THIS, const char *path);
 #define Webrogue_GLES_SetSwapInterval SDL_EGL_SetSwapInterval
 #define Webrogue_GLES_GetSwapInterval SDL_EGL_GetSwapInterval
 extern SDL_GLContext Webrogue_GLES_CreateContext(_THIS, SDL_Window * window);
+extern void Webrogue_GLES_DeleteContext(_THIS, SDL_GLContext context);
 extern int Webrogue_GLES_SwapWindow(_THIS, SDL_Window * window);
 extern int Webrogue_GLES_MakeCurrent(_THIS, SDL_Window * window, SDL_GLContext context);
-#define Webrogue_GLES_DeleteContext SDL_EGL_DeleteContext
 
 #define Webrogue_GLES_GetAttribute SDL_EGL_GetAttribute
 #define Webrogue_GLES_UnloadLibrary SDL_EGL_UnloadLibrary

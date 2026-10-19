@@ -29,7 +29,7 @@
 
 typedef struct SDL_VideoData
 {
-   struct SDL_Window *latest_window;
+   SDL_bool app_backgrounded;
 } SDL_VideoData;
 
 typedef struct SDL_WindowData
@@ -38,6 +38,7 @@ typedef struct SDL_WindowData
    
 #ifdef SDL_VIDEO_OPENGL_EGL
    EGLSurface egl_surface;
+   EGLContext egl_context;
 #endif
    SDL_Surface *surface;
 } SDL_WindowData;

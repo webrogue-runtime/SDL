@@ -97,9 +97,60 @@ typedef struct Webrogue_GLContext
 {
 } Webrogue_GLContext;
 
-SDL_EGL_CreateContext_impl(Webrogue)
-    SDL_EGL_SwapWindow_impl(Webrogue)
-        SDL_EGL_MakeCurrent_impl(Webrogue)
+SDL_GLContext Webrogue_GLES_CreateContext(_THIS, SDL_Window *window)
+{
+    SDL_WindowData *window_data = (SDL_WindowData *)window->driverdata;
+    SDL_GLContext context = SDL_EGL_CreateContext(_this, window_data->egl_surface);
+    if (context) {
+        window_data->egl_context = (EGLContext)context;
+    }
+    return context;
+}
+
+int Webrogue_GLES_SwapWindow(_THIS, SDL_Window *window)
+{
+    SDL_WindowData *window_data = (SDL_WindowData *)window->driverdata;
+    if (window_data->egl_surface == EGL_NO_SURFACE) {
+        return 0;
+    }
+    return SDL_EGL_SwapBuffers(_this, window_data->egl_surface);
+}
+
+int Webrogue_GLES_MakeCurrent(_THIS, SDL_Window *window, SDL_GLContext context)
+{
+    EGLSurface egl_surface = EGL_NO_SURFACE;
+    if (window) {
+        SDL_WindowData *window_data = (SDL_WindowData *)window->driverdata;
+        egl_surface = window_data->egl_surface;
+    }
+
+    if (SDL_EGL_MakeCurrent(_this, egl_surface, context) < 0) {
+        return -1;
+    }
+    if (window && context) {
+        for (SDL_Window *other = _this->windows; other; other = other->next) {
+            SDL_WindowData *other_data = (SDL_WindowData *)other->driverdata;
+            if (other != window && other_data &&
+                other_data->egl_context == (EGLContext)context) {
+                other_data->egl_context = EGL_NO_CONTEXT;
+            }
+        }
+        SDL_WindowData *window_data = (SDL_WindowData *)window->driverdata;
+        window_data->egl_context = (EGLContext)context;
+    }
+    return 0;
+}
+
+void Webrogue_GLES_DeleteContext(_THIS, SDL_GLContext context)
+{
+    for (SDL_Window *window = _this->windows; window; window = window->next) {
+        SDL_WindowData *window_data = (SDL_WindowData *)window->driverdata;
+        if (window_data && window_data->egl_context == (EGLContext)context) {
+            window_data->egl_context = EGL_NO_CONTEXT;
+        }
+    }
+    SDL_EGL_DeleteContext(_this, context);
+}
 #endif /* SDL_VIDEO_DRIVER_WEBROGUE */
 
     /* vi: set ts=4 sw=4 expandtab: */
