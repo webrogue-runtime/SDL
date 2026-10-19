@@ -75,6 +75,7 @@ static void WEBROGUE_RestoreEGLContext(SDL_VideoDevice *_this, SDL_Window *windo
     }
 
     if (window_data->egl_context) {
+        SDL_GL_MakeCurrent(window, NULL);
         const bool restored =
             SDL_GL_MakeCurrent(window, (SDL_GLContext)window_data->egl_context);
         if (!restored) {
