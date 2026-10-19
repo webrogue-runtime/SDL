@@ -217,6 +217,8 @@ char *SDL_GetBasePath(void)
         retval = readSymLink("/proc/self/path/a.out");
 #elif defined(__QNXNTO__)
         retval = SDL_LoadFile("/proc/self/exefile", NULL);
+#elif defined(__wasi__)
+        retval = SDL_strdup("/main.wasm");
 #else
         retval = readSymLink("/proc/self/exe"); /* linux. */
         if (!retval) {
