@@ -161,7 +161,7 @@ static bool AddWEBROGUEDisplay()
     }
 
     // int width, height;
-    // wr4c_window_size(&width, &height);
+    // wr4c_logical_size(&width, &height);
     mode.w = 100;
     mode.h = 100;
     mode.refresh_rate = 60.0f;
@@ -195,7 +195,7 @@ static bool WEBROGUE_GetDisplayModes(SDL_VideoDevice *_this, SDL_VideoDisplay *d
     SDL_zero(mode);
 
     // int width, height;
-    // wr4c_window_size(&width, &height);
+    // wr4c_logical_size(&width, &height);
     mode.w = 100;
     mode.h = 100;
     mode.refresh_rate = 60.0f;
@@ -227,7 +227,7 @@ static bool WEBROGUE_GetDisplayBounds(SDL_VideoDevice *_this, SDL_VideoDisplay *
     }
 
     // int width, height;
-    // wr4c_window_size(&width, &height);
+    // wr4c_logical_size(&width, &height);
     rect->x = 0;
     rect->y = 0;
     rect->w = 100;
@@ -245,7 +245,7 @@ static bool WEBROGUE_CreateWindow(SDL_VideoDevice *_this, SDL_Window *window, SD
     }
     wr4c_make_window(&window_data->wr_window);
     int width, height;
-    wr4c_window_size(window_data->wr_window, &width, &height);
+    wr4c_logical_size(window_data->wr_window, &width, &height);
     window->w = width;
     window->h = height;
     display_data = SDL_GetDisplayDriverDataForWindow(window);
@@ -266,8 +266,6 @@ static bool WEBROGUE_CreateWindow(SDL_VideoDevice *_this, SDL_Window *window, SD
     }
 #endif
 
-    internal->latest_window = window;
-
     SDL_SetKeyboardFocus(window);
     return true;
 }
@@ -277,6 +275,13 @@ static void WEBROGUE_DestroyWindow(SDL_VideoDevice *_this, SDL_Window *window)
     if (!window) {
         return;
     }
+#ifdef SDL_VIDEO_OPENGL_EGL
+    SDL_WindowData *window_data = (SDL_WindowData *)window->internal;
+    if (window_data->egl_surface != EGL_NO_SURFACE) {
+        SDL_EGL_DestroySurface(_this, window_data->egl_surface);
+        window_data->egl_surface = EGL_NO_SURFACE;
+    }
+#endif
     SDL_free(window->internal);
 }
 
@@ -284,7 +289,7 @@ static void WEBROGUE_GetWindowSizeInPixels(SDL_VideoDevice *_this, SDL_Window *w
 {
     SDL_WindowData *window_data = (SDL_WindowData *)window->internal;
     int width, height;
-    wr4c_gl_size(window_data->wr_window, &width, &height);
+    wr4c_physical_size(window_data->wr_window, &width, &height);
     *w = width;
     *h = height;
 }

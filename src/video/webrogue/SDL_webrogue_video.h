@@ -29,7 +29,7 @@
 
 struct SDL_VideoData
 {
-    struct SDL_Window *latest_window;
+    bool app_backgrounded;
 };
 
 struct SDL_WindowData
@@ -38,7 +38,10 @@ struct SDL_WindowData
    SDL_Surface *framebuffer;
    
 #ifdef SDL_VIDEO_OPENGL_EGL
-   EGLSurface egl_surface;
+    EGLSurface egl_surface;
+    EGLContext egl_context;
+    bool has_swap_interval;
+    int swap_interval;
 #endif
 };
 

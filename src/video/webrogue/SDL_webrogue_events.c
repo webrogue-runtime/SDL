@@ -32,6 +32,70 @@
 #define MAP_KEY(wr_key, sdl_key) case WR4C_PHYSICAL_KEY_ ## wr_key: return SDL_SCANCODE_ ## sdl_key;
 #define MAP_NAMED_KEY(wr_key, sdl_key) case WR4C_NAMED_KEY_ ## wr_key: return SDLK_ ## sdl_key;
 
+static SDL_Window *FindWebrogueWindow(SDL_VideoDevice *device, wr4c_window_t wr_window)
+{
+    SDL_Window *window;
+    for (window = device->windows; window; window = window->next) {
+        SDL_WindowData *window_data = (SDL_WindowData *)window->internal;
+        if (window_data && window_data->wr_window == wr_window) {
+            return window;
+        }
+    }
+    return NULL;
+}
+
+#ifdef SDL_VIDEO_OPENGL_EGL
+static void WEBROGUE_BackupEGLContext(SDL_VideoDevice *_this, SDL_Window *window)
+{
+    SDL_WindowData *window_data = (SDL_WindowData *)window->internal;
+
+    if (SDL_GL_GetCurrentWindow() == window) {
+        window_data->egl_context = (EGLContext)SDL_GL_GetCurrentContext();
+        window_data->has_swap_interval =
+            SDL_GL_GetSwapInterval(&window_data->swap_interval);
+        SDL_GL_MakeCurrent(window, NULL);
+    }
+
+    if (window_data->egl_surface != EGL_NO_SURFACE) {
+        SDL_EGL_DestroySurface(_this, window_data->egl_surface);
+        window_data->egl_surface = EGL_NO_SURFACE;
+    }
+}
+
+static void WEBROGUE_RestoreEGLContext(SDL_VideoDevice *_this, SDL_Window *window)
+{
+    SDL_WindowData *window_data = (SDL_WindowData *)window->internal;
+
+    if (window_data->egl_surface == EGL_NO_SURFACE) {
+        window_data->egl_surface =
+            SDL_EGL_CreateSurface(_this, window, window_data->wr_window);
+    }
+    if (window_data->egl_surface == EGL_NO_SURFACE) {
+        return;
+    }
+
+    if (window_data->egl_context) {
+        const bool restored =
+            SDL_GL_MakeCurrent(window, (SDL_GLContext)window_data->egl_context);
+        if (!restored) {
+            // The context may no longer be valid, so create a replacement.
+            window_data->egl_context = (EGLContext)SDL_GL_CreateContext(window);
+            if (window_data->egl_context) {
+                SDL_Event event;
+                SDL_zero(event);
+                event.type = SDL_EVENT_RENDER_DEVICE_RESET;
+                event.render.windowID = SDL_GetWindowID(window);
+                SDL_PushEvent(&event);
+            }
+        }
+    }
+
+    if (window_data->has_swap_interval) {
+        SDL_GL_SetSwapInterval(window_data->swap_interval);
+    }
+}
+#endif
+
 static SDL_Keycode NamedKeyToKeycode(wr4c_named_key_t key)
 {
     switch (key) {
@@ -352,6 +416,7 @@ void WEBROGUE_PumpEvents(SDL_VideoDevice *_this)
         switch (event.tag) {
         case WR4C_EVENT_TAG_MOUSE_BUTTON:
         {
+            SDL_Window *window = FindWebrogueWindow(_this, event.window);
             Uint8 button = 0;
             switch (event.inner.mouse_button.button) {
                 case WR4C_MOUSE_BUTTON_LEFT:
@@ -364,10 +429,30 @@ void WEBROGUE_PumpEvents(SDL_VideoDevice *_this)
                     button = SDL_BUTTON_MIDDLE;
                     break;
             }
-            if(button) {
+            if (!window) {
+                break;
+            }
+            SDL_FingerID finger_id = event.inner.mouse_button.touch_id;
+            if (finger_id != 0) {
+                SDL_TouchID deviceId = 1;
+                if (SDL_AddTouch(deviceId, SDL_TOUCH_DEVICE_DIRECT, "") < 0) {
+                    break;
+                }
+
+                SDL_SendTouch(
+                    0,
+                    deviceId,
+                    finger_id,
+                    window,
+                    event.inner.mouse_button.down ? SDL_EVENT_FINGER_DOWN : SDL_EVENT_FINGER_UP,
+                    (float)event.inner.mouse_button.x / window->w,
+                    (float)event.inner.mouse_button.y / window->h,
+                    1.0f
+                );
+            } else if (button) {
                 SDL_SendMouseButton(
                     0,
-                    data->latest_window,
+                    window,
                     SDL_DEFAULT_MOUSE_ID,
                     event.inner.mouse_button.button,
                     event.inner.mouse_button.down
@@ -376,14 +461,36 @@ void WEBROGUE_PumpEvents(SDL_VideoDevice *_this)
         } break;
         case WR4C_EVENT_TAG_MOUSE_MOTION:
         {
-            SDL_SendMouseMotion(
-                0,
-                data->latest_window,
-                SDL_DEFAULT_MOUSE_ID,
-                false,
-                event.inner.mouse_motion.x,
-                event.inner.mouse_motion.y
-            );
+            SDL_Window *window = FindWebrogueWindow(_this, event.window);
+            if (!window) {
+                break;
+            }
+            SDL_FingerID finger_id = event.inner.mouse_motion.touch_id;
+            if (finger_id != 0) {
+                SDL_TouchID deviceId = 1;
+                if (SDL_AddTouch(deviceId, SDL_TOUCH_DEVICE_DIRECT, "") < 0) {
+                    break;
+                }
+
+                SDL_SendTouchMotion(
+                    0,
+                    deviceId, 
+                    finger_id, 
+                    window, 
+                    (float)event.inner.mouse_motion.x / window->w,
+                    (float)event.inner.mouse_motion.y / window->h,
+                    1.0f
+                );
+            } else {
+                SDL_SendMouseMotion(
+                    0,
+                    window,
+                    SDL_DEFAULT_MOUSE_ID,
+                    false,
+                    event.inner.mouse_motion.x,
+                    event.inner.mouse_motion.y
+                );
+            }
         } break;
         case WR4C_EVENT_TAG_KEY:
         {
@@ -405,35 +512,70 @@ void WEBROGUE_PumpEvents(SDL_VideoDevice *_this)
             ev.type = SDL_EVENT_QUIT;
             SDL_PushEvent(&ev);
         } break;
-        case WR4C_EVENT_TAG_WINDOW_RESIZED:
+        case WR4C_EVENT_TAG_RESIZED:
         {
-            int width, height;
-            wr4c_window_size(
-                ((SDL_WindowData*)data->latest_window->internal)->wr_window,
-                &width,
-                &height
+            SDL_Window *window = FindWebrogueWindow(_this, event.window);
+            if (!window) {
+                break;
+            }
+            int logical_width, logical_height;
+            int physical_width, physical_height;
+            wr4c_logical_size(
+                ((SDL_WindowData*)window->internal)->wr_window,
+                &logical_width,
+                &logical_height
             );
             SDL_SendWindowEvent(
-                data->latest_window,
+                window,
                 SDL_EVENT_WINDOW_RESIZED,
-                width,
-                height
+                logical_width,
+                logical_height
+            );
+            wr4c_physical_size(
+                ((SDL_WindowData*)window->internal)->wr_window,
+                &physical_width,
+                &physical_height
+            );
+            SDL_SendWindowEvent(
+                window,
+                SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED,
+                physical_width,
+                physical_height
             );
         } break;
-        case WR4C_EVENT_TAG_GL_RESIZED:
+        case WR4C_EVENT_TAG_SURFACE_LOST:
         {
-            int width, height;
-            wr4c_gl_size(
-                ((SDL_WindowData*)data->latest_window->internal)->wr_window,
-                &width,
-                &height
-            );
-            SDL_SendWindowEvent(
-                data->latest_window, 
-                SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED, 
-                width, 
-                height
-            );
+            SDL_Window *window = FindWebrogueWindow(_this, event.window);
+            if (window) {
+#ifdef SDL_VIDEO_OPENGL_EGL
+                if (window->flags & SDL_WINDOW_OPENGL) {
+                    WEBROGUE_BackupEGLContext(_this, window);
+                }
+#endif
+                SDL_SendWindowEvent(window, SDL_EVENT_WINDOW_MINIMIZED, 0, 0);
+            }
+            if (!data->app_backgrounded) {
+                data->app_backgrounded = true;
+                SDL_SendAppEvent(SDL_EVENT_WILL_ENTER_BACKGROUND);
+                SDL_SendAppEvent(SDL_EVENT_DID_ENTER_BACKGROUND);
+            }
+        } break;
+        case WR4C_EVENT_TAG_SURFACE_ATTACHED:
+        {
+            SDL_Window *window = FindWebrogueWindow(_this, event.window);
+#ifdef SDL_VIDEO_OPENGL_EGL
+            if (window && (window->flags & SDL_WINDOW_OPENGL)) {
+                WEBROGUE_RestoreEGLContext(_this, window);
+            }
+#endif
+            if (data->app_backgrounded) {
+                data->app_backgrounded = false;
+                SDL_SendAppEvent(SDL_EVENT_WILL_ENTER_FOREGROUND);
+                SDL_SendAppEvent(SDL_EVENT_DID_ENTER_FOREGROUND);
+            }
+            if (window) {
+                SDL_SendWindowEvent(window, SDL_EVENT_WINDOW_RESTORED, 0, 0);
+            }
         } break;
         case WR4C_EVENT_TAG_INVALID:
         {

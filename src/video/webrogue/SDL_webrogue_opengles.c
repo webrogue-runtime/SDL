@@ -96,7 +96,58 @@ typedef struct Webrogue_GLContext
 {
 } Webrogue_GLContext;
 
-SDL_EGL_CreateContext_impl(Webrogue)
-SDL_EGL_SwapWindow_impl(Webrogue)
-SDL_EGL_MakeCurrent_impl(Webrogue)
+SDL_GLContext Webrogue_GLES_CreateContext(SDL_VideoDevice *_this, SDL_Window *window)
+{
+    SDL_WindowData *window_data = (SDL_WindowData *)window->internal;
+    SDL_GLContext context = SDL_EGL_CreateContext(_this, window_data->egl_surface);
+    if (context) {
+        window_data->egl_context = (EGLContext)context;
+    }
+    return context;
+}
+
+bool Webrogue_GLES_SwapWindow(SDL_VideoDevice *_this, SDL_Window *window)
+{
+    SDL_WindowData *window_data = (SDL_WindowData *)window->internal;
+    if (window_data->egl_surface == EGL_NO_SURFACE) {
+        return true;
+    }
+    return SDL_EGL_SwapBuffers(_this, window_data->egl_surface);
+}
+
+bool Webrogue_GLES_MakeCurrent(SDL_VideoDevice *_this, SDL_Window *window, SDL_GLContext context)
+{
+    EGLSurface egl_surface = EGL_NO_SURFACE;
+    if (window) {
+        SDL_WindowData *window_data = (SDL_WindowData *)window->internal;
+        egl_surface = window_data->egl_surface;
+    }
+
+    if (!SDL_EGL_MakeCurrent(_this, egl_surface, context)) {
+        return false;
+    }
+    if (window && context) {
+        for (SDL_Window *other = _this->windows; other; other = other->next) {
+            SDL_WindowData *other_data = (SDL_WindowData *)other->internal;
+            if (other != window && other_data &&
+                other_data->egl_context == (EGLContext)context) {
+                other_data->egl_context = EGL_NO_CONTEXT;
+            }
+        }
+        SDL_WindowData *window_data = (SDL_WindowData *)window->internal;
+        window_data->egl_context = (EGLContext)context;
+    }
+    return true;
+}
+
+bool Webrogue_GLES_DestroyContext(SDL_VideoDevice *_this, SDL_GLContext context)
+{
+    for (SDL_Window *window = _this->windows; window; window = window->next) {
+        SDL_WindowData *window_data = (SDL_WindowData *)window->internal;
+        if (window_data && window_data->egl_context == (EGLContext)context) {
+            window_data->egl_context = EGL_NO_CONTEXT;
+        }
+    }
+    return SDL_EGL_DestroyContext(_this, context);
+}
 #endif

@@ -34,9 +34,9 @@ extern void Webrogue_GLES_UnloadLibrary(SDL_VideoDevice *_this);
 #define Webrogue_GLES_SetSwapInterval SDL_EGL_SetSwapInterval
 #define Webrogue_GLES_GetSwapInterval SDL_EGL_GetSwapInterval
 extern SDL_GLContext Webrogue_GLES_CreateContext(SDL_VideoDevice *_this, SDL_Window *window);
+extern bool Webrogue_GLES_DestroyContext(SDL_VideoDevice *_this, SDL_GLContext context);
 extern bool Webrogue_GLES_SwapWindow(SDL_VideoDevice *_this, SDL_Window *window);
 extern bool Webrogue_GLES_MakeCurrent(SDL_VideoDevice *_this, SDL_Window *window, SDL_GLContext context);
-#define Webrogue_GLES_DestroyContext   SDL_EGL_DestroyContext
 
 #define Webrogue_GLES_UnloadLibrary   SDL_EGL_UnloadLibrary
 #define Webrogue_GLES_GetAttribute    SDL_EGL_GetAttribute
