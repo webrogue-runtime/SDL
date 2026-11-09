@@ -30,6 +30,7 @@
 typedef struct SDL_VideoData
 {
    SDL_bool app_backgrounded;
+   SDL_bool is_mouse_grabbed;
 } SDL_VideoData;
 
 typedef struct SDL_WindowData

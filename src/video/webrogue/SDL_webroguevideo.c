@@ -32,6 +32,7 @@
 #include "SDL_webroguevulkan.h"
 #include "SDL_webrogueswkb.h"
 #include "SDL_webroguevideo.h"
+#include "SDL_webroguemouse.h"
 
 #define WEBROGUEVID_DRIVER_NAME "webrogue"
 
@@ -157,6 +158,7 @@ static int WEBROGUE_VideoInit(_THIS)
     // hidInit();
 
     AddWEBROGUEDisplay();
+    WEBROGUE_InitMouse();
     // driverdata->top_display = AddN3DSDisplay(GFX_TOP);
     // driverdata->touch_display = AddN3DSDisplay(GFX_BOTTOM);
 
