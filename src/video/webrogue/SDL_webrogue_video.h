@@ -30,6 +30,7 @@
 struct SDL_VideoData
 {
     bool app_backgrounded;
+    bool is_mouse_grabbed;
 };
 
 struct SDL_WindowData

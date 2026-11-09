@@ -493,6 +493,21 @@ void WEBROGUE_PumpEvents(SDL_VideoDevice *_this)
                 );
             }
         } break;
+        case WR4C_EVENT_TAG_RAW_MOUSE_MOTION:
+        {
+            SDL_Window *window = FindWebrogueWindow(_this, event.window);
+            if (!window) {
+                break;
+            }
+            SDL_SendMouseMotion(
+                0,
+                window,
+                SDL_DEFAULT_MOUSE_ID,
+                true,
+                (int)event.inner.raw_mouse_motion.dx,
+                (int)event.inner.raw_mouse_motion.dy
+            );
+        } break;
         case WR4C_EVENT_TAG_KEY:
         {
             SDL_SendKeyboardKeyAndKeycode(

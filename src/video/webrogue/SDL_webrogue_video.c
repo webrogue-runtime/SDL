@@ -28,6 +28,7 @@
 #include "SDL_webrogue_opengles.h"
 #include "SDL_webrogue_swkb.h"
 #include "SDL_webrogue_touch.h"
+#include "SDL_webrogue_mouse.h"
 #include "SDL_webrogue_unimplemented.h"
 #include "SDL_webrogue_video.h"
 #include "SDL_webrogue_vulkan.h"
@@ -139,6 +140,8 @@ static bool WEBROGUE_VideoInit(SDL_VideoDevice *_this)
 
     AddWEBROGUEDisplay();
 
+    WEBROGUE_InitMouse();
+
     return true;
 }
 
@@ -244,6 +247,9 @@ static bool WEBROGUE_CreateWindow(SDL_VideoDevice *_this, SDL_Window *window, SD
         return false;
     }
     wr4c_make_window(&window_data->wr_window);
+    if(internal->is_mouse_grabbed) {
+        wr4c_set_mouse_grab(window_data->wr_window, true);
+    }
     int width, height;
     wr4c_logical_size(window_data->wr_window, &width, &height);
     window->w = width;
