@@ -278,7 +278,7 @@ static bool WEBROGUE_CreateWindow(SDL_VideoDevice *_this, SDL_Window *window, SD
 
 static void WEBROGUE_DestroyWindow(SDL_VideoDevice *_this, SDL_Window *window)
 {
-    if (!window) {
+    if (!window || !window->internal) {
         return;
     }
 #ifdef SDL_VIDEO_OPENGL_EGL
@@ -288,6 +288,8 @@ static void WEBROGUE_DestroyWindow(SDL_VideoDevice *_this, SDL_Window *window)
         window_data->egl_surface = EGL_NO_SURFACE;
     }
 #endif
+    wr4c_destroy_window(window_data->wr_window);
+    window->internal = NULL;
     SDL_free(window->internal);
 }
 
