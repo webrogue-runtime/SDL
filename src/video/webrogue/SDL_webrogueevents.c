@@ -506,7 +506,7 @@ void WEBROGUE_PumpEvents(_THIS)
                 PhysicalKeyToScancode(event.inner.key.physical_key),
                 NamedKeyToKeycode(event.inner.key.named_key)
             );
-            if(event.inner.key.text_len) {
+            if(event.inner.key.text_len && event.inner.key.down) {
                 SDL_SendKeyboardText(event.inner.key.text);
             }
         } break;
