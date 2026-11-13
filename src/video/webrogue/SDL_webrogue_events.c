@@ -518,7 +518,7 @@ void WEBROGUE_PumpEvents(SDL_VideoDevice *_this)
                 NamedKeyToKeycode(event.inner.key.named_key),
                 event.inner.key.down
             );
-            if(event.inner.key.text) {
+            if(event.inner.key.text && event.inner.key.down) {
                 SDL_SendKeyboardText(event.inner.key.text);
             }
         } break;
