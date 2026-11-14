@@ -142,6 +142,9 @@ static VideoBootStrap *bootstrap[] = {
 #ifdef SDL_VIDEO_DRIVER_NGAGE
     &NGAGE_bootstrap,
 #endif
+#ifdef SDL_VIDEO_DRIVER_WEBROGUE
+    &WEBROGUE_bootstrap,
+#endif
 #ifdef SDL_VIDEO_DRIVER_OFFSCREEN
     &OFFSCREEN_bootstrap,
 #endif
@@ -214,7 +217,7 @@ typedef struct
 
 static Uint32 SDL_DefaultGraphicsBackends(SDL_VideoDevice *_this)
 {
-#if (defined(SDL_VIDEO_OPENGL) && defined(__MACOSX__)) || (defined(__IPHONEOS__) && !TARGET_OS_MACCATALYST) || defined(__ANDROID__) || defined(__NACL__)
+#if (defined(SDL_VIDEO_OPENGL) && defined(__MACOSX__)) || (defined(__IPHONEOS__) && !TARGET_OS_MACCATALYST) || defined(__ANDROID__) || defined(__NACL__) || defined(__wasi__)
     if (_this->GL_CreateContext) {
         return SDL_WINDOW_OPENGL;
     }
@@ -518,7 +521,7 @@ int SDL_VideoInit(const char *driver_name)
         while (driver_attempt && *driver_attempt != 0 && !video) {
             const char *driver_attempt_end = SDL_strchr(driver_attempt, ',');
             size_t driver_attempt_len = (driver_attempt_end) ? (driver_attempt_end - driver_attempt)
-                                                                     : SDL_strlen(driver_attempt);
+                                                             : SDL_strlen(driver_attempt);
 
             for (i = 0; bootstrap[i]; ++i) {
                 if ((driver_attempt_len == SDL_strlen(bootstrap[i]->name)) &&
@@ -1068,8 +1071,8 @@ static SDL_DisplayMode *SDL_GetClosestDisplayModeForDisplay(SDL_VideoDisplay *di
 }
 
 SDL_DisplayMode *SDL_GetClosestDisplayMode(int displayIndex,
-                          const SDL_DisplayMode *mode,
-                          SDL_DisplayMode *closest)
+                                           const SDL_DisplayMode *mode,
+                                           SDL_DisplayMode *closest)
 {
     SDL_VideoDisplay *display;
 
@@ -4026,10 +4029,10 @@ int SDL_GL_GetAttribute(SDL_GLattr attr, int *value)
         return 0;
     }
     case SDL_GL_CONTEXT_NO_ERROR:
-        {
-            *value = _this->gl_config.no_error;
-            return 0;
-        }
+    {
+        *value = _this->gl_config.no_error;
+        return 0;
+    }
     default:
         return SDL_SetError("Unknown OpenGL attribute");
     }
@@ -4498,7 +4501,7 @@ int SDL_ShowMessageBox(const SDL_MessageBoxData *messageboxdata, int *buttonid)
             while (driver_attempt && (*driver_attempt != 0) && (retval == -1)) {
                 const char *driver_attempt_end = SDL_strchr(driver_attempt, ',');
                 size_t driver_attempt_len = (driver_attempt_end) ? (driver_attempt_end - driver_attempt)
-                                                                     : SDL_strlen(driver_attempt);
+                                                                 : SDL_strlen(driver_attempt);
                 for (i = 0; bootstrap[i]; ++i) {
                     if (bootstrap[i]->ShowMessageBox && (driver_attempt_len == SDL_strlen(bootstrap[i]->name)) &&
                         (SDL_strncasecmp(bootstrap[i]->name, driver_attempt, driver_attempt_len) == 0)) {

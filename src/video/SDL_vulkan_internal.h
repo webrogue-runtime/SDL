@@ -26,7 +26,7 @@
 #include "SDL_stdinc.h"
 
 #ifdef SDL_VIDEO_VULKAN
-#if defined(SDL_LOADSO_DISABLED) || defined(SDL_LOADSO_DUMMY)
+#if (defined(SDL_LOADSO_DISABLED) || defined(SDL_LOADSO_DUMMY)) && !defined(__wasi__)
 #error You should not be here.
 #endif
 
@@ -55,6 +55,9 @@
 #ifdef SDL_VIDEO_DRIVER_X11
 #define VK_USE_PLATFORM_XLIB_KHR
 #define VK_USE_PLATFORM_XCB_KHR
+#endif
+#ifdef SDL_VIDEO_DRIVER_WEBROGUE
+#define VK_USE_PLATFORM_WEBROGUE
 #endif
 
 #define VK_NO_PROTOTYPES

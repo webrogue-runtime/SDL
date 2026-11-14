@@ -26,6 +26,9 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <errno.h>
+#ifdef __wasi__
+#include <sched.h>
+#endif
 
 #include "SDL_timer.h"
 #include "SDL_hints.h"
@@ -180,6 +183,11 @@ Uint64 SDL_GetPerformanceFrequency(void)
 
 void SDL_Delay(Uint32 ms)
 {
+#ifdef __wasi__
+    if (ms == 0) {
+        sched_yield();
+    }
+#endif
     int was_error;
 
 #ifdef HAVE_NANOSLEEP
